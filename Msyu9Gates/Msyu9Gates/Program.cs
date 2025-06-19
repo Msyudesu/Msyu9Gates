@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Mvc;
 using Msyu9Gates.Client.Pages;
 using Msyu9Gates.Components;
+using Msyu9Gates.Utils;
 
 namespace Msyu9Gates
 {
@@ -15,6 +17,12 @@ namespace Msyu9Gates
                 .AddInteractiveWebAssemblyComponents();
 
             var app = builder.Build();
+
+
+            app.MapPost("/api/0002", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.CheckKey(builder.Configuration, key));
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

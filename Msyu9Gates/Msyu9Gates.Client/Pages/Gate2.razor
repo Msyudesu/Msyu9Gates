@@ -1,5 +1,6 @@
 ﻿@page "/gate2"
 @rendermode InteractiveAuto
+@inject NavigationManager nav
 
 <PageTitle>Gate 2</PageTitle>
 
@@ -7,10 +8,37 @@
 
 <h3>Section A</h3>
 
-<p role="status">Current count: 0</p>
+<br />
 
-<button class="btn btn-primary">Click me</button>
+<input type="test" readonly class="form-control bg-dark" style="color: white" placeholder="" aria-label="" aria-describedby="basic-addon2" @bind="_responseMessage">
+
+<br />
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Enter Key" aria-label="Enter Key" aria-describedby="basic-addon2" @bind="_key">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" @onclick="Submit">Submit</button>
+    </div>
+</div>
 
 @code {
+    private string? _key = null;
+    private string? _responseMessage = null;
+
+    private HttpClient http = new HttpClient();
     
+    private async Task Submit()
+    {       
+        Uri uri = new Uri(nav.BaseUri + "api/0002");
+        
+        var response = await http.PostAsJsonAsync(uri, _key);
+        if (response.IsSuccessStatusCode)
+        {
+            _responseMessage = await response.Content.ReadFromJsonAsync<string>();
+        }
+        else
+        {
+            _responseMessage = "An error occurred while contacting the server.";
+        }
+    }
 }
