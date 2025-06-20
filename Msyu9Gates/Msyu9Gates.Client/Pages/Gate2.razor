@@ -52,6 +52,12 @@
         if (response.IsSuccessStatusCode)
         {
             _responseMessage = await response.Content.ReadFromJsonAsync<string>();
+
+            if (_responseMessage == "Key is correct.")
+            {
+                nav.NavigateTo(nav.BaseUri + "Z2F0ZTJi", forceLoad: true);
+            }
+
             Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
             var attemptsResponse = await http.GetAsync(attemptsUri);
             _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();

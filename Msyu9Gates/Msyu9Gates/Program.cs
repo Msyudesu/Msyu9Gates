@@ -22,7 +22,7 @@ namespace Msyu9Gates
 
             app.MapPost("/api/0002", ([FromBody] string key) =>
             {
-                return Results.Ok(Gate2Utils.CheckKey(builder.Configuration, key));
+                return Results.Ok(Gate2Utils.Check2AKeyIsCorrect(builder.Configuration, key));
             });
             app.MapGet("/api/Gate2Attempts", () =>
             {
