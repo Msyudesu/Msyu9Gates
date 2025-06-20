@@ -1,0 +1,74 @@
+﻿@page "/Z2F0ZTJi" // This is the route for Gate2B
+@rendermode InteractiveAuto
+@inject NavigationManager nav
+
+<PageTitle>Ynnejynnej</PageTitle>
+
+<h3>Gate2B</h3>
+<div class="keypad-container">
+    <input type="text" readonly class="keypad-display" value="@Key" />
+    <div class="keypad-grid">
+        @for (int i = 1; i <= 9; i++)
+        {
+            int value = i;
+            <button class="keypad-btn" @onclick="() => AddDigit(value)">@value</button>
+            @* if (i % 3 == 0)
+            {
+                <br />
+            } *@
+        }
+        <button class="keypad-btn zero" @onclick="() => AddDigit(0)">0</button>
+    </div>
+    <button class="keypad-btn submit" @onclick="Submit">Submit</button>
+    <button class="keypad-btn clear" @onclick="ClearInput">Clear</button>
+</div>
+
+<br />
+<h4>Recent Attempts</h4>
+<ul>
+    @foreach (var attempt in _attempts)
+    {
+        <li>@attempt</li>
+    }
+</ul>
+
+@code {
+    private string Key { get; set; } = "";
+    private List<string> _attempts = new List<string>();
+
+    private HttpClient http = new HttpClient();
+
+    protected override async void OnInitialized()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/Gate2B_Attempts");
+        var response = await http.GetAsync(uri);
+        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+    }
+
+    private void AddDigit(int digit)
+    {
+        Key += digit.ToString();
+    }
+
+    private async void Submit()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/0003");
+        var response = await http.PostAsJsonAsync(uri, Key);
+        string? responseMessage = await response.Content.ReadFromJsonAsync<string>();
+
+        if (responseMessage!.Equals("Success"))
+        {
+            nav.NavigateTo("/", forceLoad: false);
+        }
+        ClearInput();
+
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
+        var attemptsResponse = await http.GetAsync(attemptsUri);
+        _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+    }
+
+    private void ClearInput()
+    {
+        Key = "";
+    }
+}
