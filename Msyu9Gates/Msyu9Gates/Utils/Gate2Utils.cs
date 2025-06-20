@@ -1,4 +1,6 @@
-﻿namespace Msyu9Gates.Utils
+﻿using Msyu9Gates.Data;
+
+namespace Msyu9Gates.Utils
 {
     public static class Gate2Utils
     {
@@ -14,15 +16,17 @@
             {
                 if (key == _key) { return "Key is correct."; }
 
-                for (int i = 0; i < key.Length - 1; i++)
+                for (int i = 0; i <= key.Length - 1; i++)
                 { 
                     if (key[i] == _key[i])
                     {
                         correctCount++;
                     }   
                 }
+                Gate2Data.Gate2AttemptLog.Add($"{key} -- {correctCount} / {_key.Length}");
                 return $"Key is incorrect. {correctCount} / {_key.Length} characters are correct.";
             }
+            Gate2Data.Gate2AttemptLog.Add($"{key}");
             return $"Key is incorrect.";
         }
     }
