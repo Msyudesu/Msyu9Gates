@@ -21,24 +21,45 @@
     </div>
 </div>
 
+<h4>Recent Attempts</h4>
+<ul>
+    @foreach (var attempt in _attempts)
+    {
+        <li>@attempt</li>
+    }
+</ul>
+
 @code {
     private string? _key = null;
     private string? _responseMessage = null;
 
     private HttpClient http = new HttpClient();
-    
+
+    private List<string> _attempts = new List<string>();
+
+    protected override async void OnInitialized()
+    {        
+        Uri uri = new Uri(nav.BaseUri + "api/Gate2Attempts");
+        var response = await http.GetAsync(uri);
+        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+    }
+
     private async Task Submit()
     {       
         Uri uri = new Uri(nav.BaseUri + "api/0002");
-        
+
         var response = await http.PostAsJsonAsync(uri, _key);
         if (response.IsSuccessStatusCode)
         {
             _responseMessage = await response.Content.ReadFromJsonAsync<string>();
+            Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
+            var attemptsResponse = await http.GetAsync(attemptsUri);
+            _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
         }
         else
         {
             _responseMessage = "An error occurred while contacting the server.";
         }
+        nav.NavigateTo("/gate2", forceLoad: false);
     }
 }
