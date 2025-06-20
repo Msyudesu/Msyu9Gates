@@ -62,7 +62,7 @@
         }
         ClearInput();
 
-        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2B_Attempts");
         var attemptsResponse = await http.GetAsync(attemptsUri);
         _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
     }
