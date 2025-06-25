@@ -1,12 +1,11 @@
 ﻿@page "/gate2"
 @rendermode InteractiveAuto
 @inject NavigationManager nav
+@inject IJSRuntime js
 
 <PageTitle>Gate 2</PageTitle>
 
-<h1>Gate 2</h1>
-
-<h3>Section A</h3>
+<h3>Gate 2A</h3>
 
 <br />
 
@@ -39,13 +38,16 @@
 
     protected override async void OnInitialized()
     {        
-        Uri uri = new Uri(nav.BaseUri + "api/Gate2Attempts");
-        var response = await http.GetAsync(uri);
-        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+        await GetRecentAttempts();
     }
 
     private async Task Submit()
-    {       
+    {
+        if (string.IsNullOrEmpty(_key))
+        {
+            _responseMessage = "Please enter a key.";
+            return;
+        }
         Uri uri = new Uri(nav.BaseUri + "api/0002");
 
         var response = await http.PostAsJsonAsync(uri, _key);
@@ -55,17 +57,22 @@
 
             if (_responseMessage == "Key is correct.")
             {
+                await js.InvokeVoidAsync("alert", $"Key Obtained:  0002_{_key}");
                 nav.NavigateTo(nav.BaseUri + "Z2F0ZTJi", forceLoad: true);
             }
-
-            Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
-            var attemptsResponse = await http.GetAsync(attemptsUri);
-            _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+            await GetRecentAttempts();
         }
         else
         {
             _responseMessage = "An error occurred while contacting the server.";
         }
         nav.NavigateTo("/gate2", forceLoad: false);
+    }
+
+    private async Task GetRecentAttempts()
+    {
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2A_Attempts");
+        var attemptsResponse = await http.GetAsync(attemptsUri);
+        _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
     }
 }
