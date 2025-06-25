@@ -48,14 +48,42 @@ namespace Msyu9Gates
         private static void AddAPIs(WebApplication app, WebApplicationBuilder builder)
         {
             #region Gate 2 APIs
+
+            // Key Checks
             app.MapPost("/api/0002", ([FromBody] string key) =>
             {
                 return Results.Ok(Gate2Utils.Check2AKeyIsCorrect(builder.Configuration, key));
             });
 
-            app.MapGet("/api/Gate2Attempts", () =>
+            app.MapPost("/api/0003", ([FromBody] string key) =>
             {
-                return Gate2Data.Gate2AttemptLog;
+                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0003"));
+            });
+
+            app.MapPost("/api/0004", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0004"));
+            });
+
+            app.MapPost("/api/0005", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.Check2CKeyIsCorrect(builder.Configuration, key));
+            });
+            
+            app.MapPost("/api/0006", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0006"));
+            });
+
+            app.MapGet("/api/Is2CClueEnabled", () =>
+            {
+                return Results.Ok(Gate2Utils.displayGate2CClue);
+            });
+
+            // Attempt Logs
+            app.MapGet("/api/Gate2A_Attempts", () =>
+            {
+                return Gate2Data.Gate2A_AttemptLog;
             });
 
             app.MapGet("/api/Gate2B_Attempts", () =>
@@ -63,9 +91,9 @@ namespace Msyu9Gates
                 return Gate2Data.Gate2B_AttemptLog;
             });
 
-            app.MapPost("/api/0003", ([FromBody] string key) =>
+            app.MapGet("/api/Gate2C_Attempts", () =>
             {
-                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key));
+                return Gate2Data.Gate2C_AttemptLog;
             });
             #endregion
         }

@@ -1,6 +1,7 @@
 ﻿@page "/Z2F0ZTJi" // This is the route for Gate2B
 @rendermode InteractiveAuto
 @inject NavigationManager nav
+@inject IJSRuntime js
 
 <PageTitle>Ynnejynnej</PageTitle>
 
@@ -19,6 +20,15 @@
     <button class="keypad-btn clear" @onclick="ClearInput">Clear</button>
 </div>
 
+@{
+    if (isClueFor2CEnabled)
+    {
+        <br />
+        <a href="https://www.barnesandnoble.com/w/moby-dick-herman-melville/1116610565" class="btn btn-link">Clue earned from completing 2C</a>
+        <br />
+    }
+}
+
 <br />
 <h4>Recent Attempts</h4>
 <ul>
@@ -31,46 +41,49 @@
 @code {
     private string Key { get; set; } = "";
     private List<string> _attempts = new List<string>();
-
+    private bool isClueFor2CEnabled = false;
     private HttpClient http = new HttpClient();
 
     protected override async void OnInitialized()
-    {
+    {  
+        Uri uri = new Uri(nav.BaseUri + "api/Is2CClueEnabled");
+        var response = await http.GetAsync(uri);
+        isClueFor2CEnabled = await response.Content.ReadFromJsonAsync<bool>();
         await GetRecentAttempts();
     }    
 
     private async void Submit()
     {
-        if (Key.Equals("8675309"))
+        // Clue for 2B
+        string? responseMessage = await CheckKey("0003");
+        if (responseMessage!.Equals("Success"))
         {
+            await js.InvokeVoidAsync("alert", $"Key Obtained:  0003_{Key}.\nBack to the root we go!");
             nav.NavigateTo("/", forceLoad: false);
         }
 
-        string? responseMessage = await CheckKey();
-
+        responseMessage = await CheckKey("0004");
         if (responseMessage!.Equals("Success"))
         {
             // Move to 2C - Final Step for Gate 2
+            await js.InvokeVoidAsync("alert", $"Key Obtained:  0004_{Key}");
+            nav.NavigateTo("/gate2c-75260986245481", forceLoad: false);
         }
-        else
-        {
-            // Call API to check alternative keys and provide clues.
-            // This will include keys for clues used in later gates.
-        }
-        ClearInput();
 
+        responseMessage = await CheckKey("0006");        
+        if (responseMessage!.Equals("Success")) // Final Code for Gate 2
+        {
+            await js.InvokeVoidAsync("alert", $"Key Obtained:  0006_{Key}. Gate 2 Complete. Gate 3 will be available soon.");
+            nav.NavigateTo("/", forceLoad: false);
+        }
+
+
+        ClearInput();
         await GetRecentAttempts();
     }
 
-    private void AddDigit(int digit)
-    {
-        Key += digit.ToString();
-    }
-
-    private void ClearInput()
-    {
-        Key = "";
-    }
+    private void AddDigit(int digit) => Key += digit.ToString();
+    private void ClearInput() => Key = "";
 
     private async Task GetRecentAttempts()
     {
@@ -79,11 +92,10 @@
         _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
     }
 
-    private async Task<string> CheckKey()
+    private async Task<string> CheckKey(string key_number)
     {
-        Uri uri = new Uri(nav.BaseUri + "api/0003");
+        Uri uri = new Uri(nav.BaseUri + "api/" + key_number);
         var response = await http.PostAsJsonAsync(uri, Key);
-        return await response.Content.ReadFromJsonAsync<string>() ?? "Failure";
-        
+        return await response.Content.ReadFromJsonAsync<string>() ?? "Failure";        
     }
 }
