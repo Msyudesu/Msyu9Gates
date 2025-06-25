@@ -18,27 +18,7 @@ namespace Msyu9Gates
                 .AddInteractiveWebAssemblyComponents();
 
             var app = builder.Build();
-
-
-            app.MapPost("/api/0002", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2AKeyIsCorrect(builder.Configuration, key));
-            });
-            
-            app.MapGet("/api/Gate2Attempts", () =>
-            {
-                return Gate2Data.Gate2AttemptLog;
-            });
-
-            app.MapGet("/api/Gate2B_Attempts", () =>
-            {
-                return Gate2Data.Gate2B_AttemptLog;
-            });
-
-            app.MapPost("/api/0003", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key));
-            });
+            AddAPIs(app, builder);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -63,6 +43,31 @@ namespace Msyu9Gates
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
             app.Run();
+        }
+
+        private static void AddAPIs(WebApplication app, WebApplicationBuilder builder)
+        {
+            #region Gate 2 APIs
+            app.MapPost("/api/0002", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.Check2AKeyIsCorrect(builder.Configuration, key));
+            });
+
+            app.MapGet("/api/Gate2Attempts", () =>
+            {
+                return Gate2Data.Gate2AttemptLog;
+            });
+
+            app.MapGet("/api/Gate2B_Attempts", () =>
+            {
+                return Gate2Data.Gate2B_AttemptLog;
+            });
+
+            app.MapPost("/api/0003", ([FromBody] string key) =>
+            {
+                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key));
+            });
+            #endregion
         }
     }
 }

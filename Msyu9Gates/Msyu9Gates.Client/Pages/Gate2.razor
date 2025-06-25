@@ -39,13 +39,16 @@
 
     protected override async void OnInitialized()
     {        
-        Uri uri = new Uri(nav.BaseUri + "api/Gate2Attempts");
-        var response = await http.GetAsync(uri);
-        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+        await GetRecentAttempts();
     }
 
     private async Task Submit()
-    {       
+    {
+        if (string.IsNullOrEmpty(_key))
+        {
+            _responseMessage = "Please enter a key.";
+            return;
+        }
         Uri uri = new Uri(nav.BaseUri + "api/0002");
 
         var response = await http.PostAsJsonAsync(uri, _key);
@@ -57,15 +60,19 @@
             {
                 nav.NavigateTo(nav.BaseUri + "Z2F0ZTJi", forceLoad: true);
             }
-
-            Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
-            var attemptsResponse = await http.GetAsync(attemptsUri);
-            _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+            await GetRecentAttempts();
         }
         else
         {
             _responseMessage = "An error occurred while contacting the server.";
         }
         nav.NavigateTo("/gate2", forceLoad: false);
+    }
+
+    private async Task GetRecentAttempts()
+    {
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
+        var attemptsResponse = await http.GetAsync(attemptsUri);
+        _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
     }
 }

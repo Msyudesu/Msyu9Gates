@@ -4,18 +4,14 @@
 
 <PageTitle>Ynnejynnej</PageTitle>
 
-<h3>Gate2B</h3>
+<h3>Gate - 2B</h3>
 <div class="keypad-container">
     <input type="text" readonly class="keypad-display" value="@Key" />
     <div class="keypad-grid">
         @for (int i = 1; i <= 9; i++)
         {
             int value = i;
-            <button class="keypad-btn" @onclick="() => AddDigit(value)">@value</button>
-            @* if (i % 3 == 0)
-            {
-                <br />
-            } *@
+            <button class="keypad-btn" @onclick="() => AddDigit(value)">@value</button>            
         }
         <button class="keypad-btn zero" @onclick="() => AddDigit(0)">0</button>
     </div>
@@ -40,9 +36,30 @@
 
     protected override async void OnInitialized()
     {
-        Uri uri = new Uri(nav.BaseUri + "api/Gate2B_Attempts");
-        var response = await http.GetAsync(uri);
-        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+        await GetRecentAttempts();
+    }    
+
+    private async void Submit()
+    {
+        if (Key.Equals("8675309"))
+        {
+            nav.NavigateTo("/", forceLoad: false);
+        }
+
+        string? responseMessage = await CheckKey();
+
+        if (responseMessage!.Equals("Success"))
+        {
+            // Move to 2C - Final Step for Gate 2
+        }
+        else
+        {
+            // Call API to check alternative keys and provide clues.
+            // This will include keys for clues used in later gates.
+        }
+        ClearInput();
+
+        await GetRecentAttempts();
     }
 
     private void AddDigit(int digit)
@@ -50,25 +67,23 @@
         Key += digit.ToString();
     }
 
-    private async void Submit()
-    {
-        Uri uri = new Uri(nav.BaseUri + "api/0003");
-        var response = await http.PostAsJsonAsync(uri, Key);
-        string? responseMessage = await response.Content.ReadFromJsonAsync<string>();
-
-        if (responseMessage!.Equals("Success"))
-        {
-            nav.NavigateTo("/", forceLoad: false);
-        }
-        ClearInput();
-
-        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2Attempts");
-        var attemptsResponse = await http.GetAsync(attemptsUri);
-        _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
-    }
-
     private void ClearInput()
     {
         Key = "";
+    }
+
+    private async Task GetRecentAttempts()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/Gate2B_Attempts");
+        var response = await http.GetAsync(uri);
+        _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
+    }
+
+    private async Task<string> CheckKey()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/0003");
+        var response = await http.PostAsJsonAsync(uri, Key);
+        return await response.Content.ReadFromJsonAsync<string>() ?? "Failure";
+        
     }
 }

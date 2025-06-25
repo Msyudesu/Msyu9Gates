@@ -24,13 +24,15 @@ namespace Msyu9Gates.Utils
                 Gate2Data.Gate2AttemptLog.Add($"{key} -- {_correctCount} / {_key.Length}");
                 return $"Key is incorrect. {_correctCount} / {_key.Length} characters are correct.";
             }
-            Gate2Data.Gate2AttemptLog.Add($"{key}");
+            if (!string.IsNullOrWhiteSpace(key))
+                Gate2Data.Gate2AttemptLog.Add($"{key}");
             return $"Key is incorrect.";
         }
 
         public static string Check2BKeyIsCorrect(IConfiguration config, string key)
         {
-            Gate2Data.Gate2B_AttemptLog.Add(key);
+            if (!string.IsNullOrWhiteSpace(key))
+                Gate2Data.Gate2B_AttemptLog.Add(key);
             if (key.Equals(config.GetValue<string>("Keys:0003")))
                 return "Success";
             return "Failure";
