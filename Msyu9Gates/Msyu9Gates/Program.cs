@@ -63,9 +63,11 @@ namespace Msyu9Gates
         { 
             Gate gate2 = new Gate(builder.Configuration);
             gate2.Name = "Gate 2";
+            gate2.GateDifficulty = Gate.Difficulty.Medium;
 
             Gate gate3 = new Gate(builder.Configuration);
             gate3.Name = "Gate 3";
+            gate3.GateDifficulty = Gate.Difficulty.Challenge;
 
 
             // Key Checks
