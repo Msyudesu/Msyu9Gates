@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Msyu9Gates", "Msyu9Gates\Ms
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Msyu9Gates.Client", "Msyu9Gates\Msyu9Gates.Client\Msyu9Gates.Client.csproj", "{606D48F4-6335-41D3-BDB4-DBD6E79A07B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Msyu9Gates.Lib", "Msyu9Gates.Lib\Msyu9Gates.Lib\Msyu9Gates.Lib.csproj", "{A0309717-0053-4A40-AD1A-772CFA7A4A89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{606D48F4-6335-41D3-BDB4-DBD6E79A07B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606D48F4-6335-41D3-BDB4-DBD6E79A07B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{606D48F4-6335-41D3-BDB4-DBD6E79A07B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0309717-0053-4A40-AD1A-772CFA7A4A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0309717-0053-4A40-AD1A-772CFA7A4A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0309717-0053-4A40-AD1A-772CFA7A4A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0309717-0053-4A40-AD1A-772CFA7A4A89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

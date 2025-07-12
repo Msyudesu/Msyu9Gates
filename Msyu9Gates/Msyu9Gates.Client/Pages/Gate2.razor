@@ -5,74 +5,12 @@
 
 <PageTitle>Gate 2</PageTitle>
 
-<h3>Gate 2A</h3>
+<h3>Gate 2</h3>
 
 <br />
 
-<input type="test" readonly class="form-control bg-dark" style="color: white" placeholder="" aria-label="" aria-describedby="basic-addon2" @bind="_responseMessage">
-
-<br />
-
-<div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Enter Key" aria-label="Enter Key" aria-describedby="basic-addon2" @bind="_key">
-    <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button" @onclick="Submit">Submit</button>
-    </div>
-</div>
-
-<h4>Recent Attempts</h4>
-<ul>
-    @foreach (var attempt in _attempts)
-    {
-        <li>@attempt</li>
-    }
-</ul>
+<p style="color:lawngreen"> Gate 2 has been completed.</p>
 
 @code {
-    private string? _key = null;
-    private string? _responseMessage = null;
 
-    private HttpClient http = new HttpClient();
-
-    private List<string> _attempts = new List<string>();
-
-    protected override async void OnInitialized()
-    {        
-        await GetRecentAttempts();
-    }
-
-    private async Task Submit()
-    {
-        if (string.IsNullOrEmpty(_key))
-        {
-            _responseMessage = "Please enter a key.";
-            return;
-        }
-        Uri uri = new Uri(nav.BaseUri + "api/0002");
-
-        var response = await http.PostAsJsonAsync(uri, _key);
-        if (response.IsSuccessStatusCode)
-        {
-            _responseMessage = await response.Content.ReadFromJsonAsync<string>();
-
-            if (_responseMessage == "Key is correct.")
-            {
-                await js.InvokeVoidAsync("alert", $"Key Obtained:  0002_{_key}");
-                nav.NavigateTo(nav.BaseUri + "Z2F0ZTJi", forceLoad: true);
-            }
-            await GetRecentAttempts();
-        }
-        else
-        {
-            _responseMessage = "An error occurred while contacting the server.";
-        }
-        nav.NavigateTo("/gate2", forceLoad: false);
-    }
-
-    private async Task GetRecentAttempts()
-    {
-        Uri attemptsUri = new Uri(nav.BaseUri + "api/Gate2A_Attempts");
-        var attemptsResponse = await http.GetAsync(attemptsUri);
-        _attempts = await attemptsResponse.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
-    }
 }
