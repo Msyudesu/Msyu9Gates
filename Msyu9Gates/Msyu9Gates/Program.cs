@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Msyu9Gates.Client.Pages;
+
 using Msyu9Gates.Components;
-using Msyu9Gates.Utils;
 using Msyu9Gates.Data;
+using Msyu9Gates.Utils;
+using Msyu9Gates.Lib;
 
 namespace Msyu9Gates
 {
@@ -12,13 +13,26 @@ namespace Msyu9Gates
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+            builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
 
             var app = builder.Build();
-            AddAPIs(app, builder);
+
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+            var environment = app.Environment;
+
+            logger.LogInformation($"Application Started: Running in {environment}");
+
+            BuildGatesAndRegisterApis(app, builder);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -45,57 +59,40 @@ namespace Msyu9Gates
             app.Run();
         }
 
-        private static void AddAPIs(WebApplication app, WebApplicationBuilder builder)
-        {
-            #region Gate 2 APIs
+        private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
+        { 
+            Gate gate2 = new Gate(builder.Configuration);
+            gate2.Name = "Gate 2";
+
+            Gate gate3 = new Gate(builder.Configuration);
+            gate3.Name = "Gate 3";
+
 
             // Key Checks
-            app.MapPost("/api/0002", ([FromBody] string key) =>
+            app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
             {
-                return Results.Ok(Gate2Utils.Check2AKeyIsCorrect(builder.Configuration, key));
-            });
-
-            app.MapPost("/api/0003", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0003"));
-            });
-
-            app.MapPost("/api/0004", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0004"));
-            });
-
-            app.MapPost("/api/0005", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2CKeyIsCorrect(builder.Configuration, key));
-            });
-            
-            app.MapPost("/api/0006", ([FromBody] string key) =>
-            {
-                return Results.Ok(Gate2Utils.Check2BKeyIsCorrect(builder.Configuration, key, "0006"));
-            });
-
-            app.MapGet("/api/Is2CClueEnabled", () =>
-            {
-                return Results.Ok(Gate2Utils.displayGate2CClue);
+                return Results.Ok();
             });
 
             // Attempt Logs
-            app.MapGet("/api/Gate2A_Attempts", () =>
+            app.MapPost("/api/GetAttempts", ([FromBody] int gate) =>
             {
-                return Gate2Data.Gate2A_AttemptLog;
+                switch (gate)
+                {
+                    case 2:
+                        return Results.Ok(gate2.history);
+                    case 3:
+                        return Results.Ok(gate3.history);
+                    default:
+                        return Results.BadRequest("Invalid gate number");
+                }
             });
 
-            app.MapGet("/api/Gate2B_Attempts", () =>
+            // Other
+            app.MapGet("/api/Is2CClueEnabled", () =>
             {
-                return Gate2Data.Gate2B_AttemptLog;
+                return Results.Ok(GateFlags.Gate2C_ClueEnabled);
             });
-
-            app.MapGet("/api/Gate2C_Attempts", () =>
-            {
-                return Gate2Data.Gate2C_AttemptLog;
-            });
-            #endregion
         }
     }
 }
