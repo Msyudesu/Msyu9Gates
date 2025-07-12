@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Msyu9Gates.Client.Pages;
 using Msyu9Gates.Components;
 using Msyu9Gates.Utils;
 using Msyu9Gates.Data;

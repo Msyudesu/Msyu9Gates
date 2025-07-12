@@ -12,7 +12,7 @@
         @for (int i = 1; i <= 9; i++)
         {
             int value = i;
-            <button class="keypad-btn" @onclick="() => AddDigit(value)">@value</button>            
+            <button class="keypad-btn" @onclick="() => AddDigit(value)">@value</button>
         }
         <button class="keypad-btn zero" @onclick="() => AddDigit(0)">0</button>
     </div>
@@ -24,7 +24,7 @@
     if (isClueFor2CEnabled)
     {
         <br />
-        <a href="https://www.barnesandnoble.com/w/moby-dick-herman-melville/1116610565" class="btn btn-link">Clue earned from completing 2C</a>
+        <a href="@GetHintURL()" class="btn btn-link">Clue earned from completing 2C</a>
         <br />
     }
 }
@@ -97,5 +97,10 @@
         Uri uri = new Uri(nav.BaseUri + "api/" + key_number);
         var response = await http.PostAsJsonAsync(uri, Key);
         return await response.Content.ReadFromJsonAsync<string>() ?? "Failure";        
+    }
+
+    private string GetHintURL()
+    {
+        return "https://www.barnesandnoble.com/w/moby-dick-herman-melville/1116610565";
     }
 }
