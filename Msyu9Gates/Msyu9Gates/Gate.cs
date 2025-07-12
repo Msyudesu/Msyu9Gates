@@ -73,7 +73,6 @@ namespace Msyu9Gates
         private void CheckSpecialConditions(string _key)
         {
             // Implement any special conditions for the gate here
-            // This could include checking for specific keys, conditions, or other requirements
             switch(_key)
             {
                 case "0005": // Gate 2C
