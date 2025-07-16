@@ -17,9 +17,7 @@ namespace Msyu9Gates.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(_config.GetConnectionString("SQLite"))
-                .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, LogLevel.Information);
+            optionsBuilder.UseSqlite(_config.GetConnectionString("SQLite"));
         }
     }
 }

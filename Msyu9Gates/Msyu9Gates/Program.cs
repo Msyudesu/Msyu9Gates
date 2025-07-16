@@ -28,8 +28,6 @@ namespace Msyu9Gates
             builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-                options.EnableSensitiveDataLogging();
-                options.LogTo(Console.WriteLine, LogLevel.Information);
             });
 
             var app = builder.Build();
