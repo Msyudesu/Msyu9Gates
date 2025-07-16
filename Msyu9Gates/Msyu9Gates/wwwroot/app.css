@@ -1,6 +1,11 @@
+@font-face {
+    font-family: 'Exocet';
+    src: url('/fonts/exocet-blizzard-light.ttf') format('truetype');
+}
+
 html, body {
     color: azure;
-    font-family: 'Papyrus', Papyrus, Arial, sans-serif;
+    font-family: 'Exocet', Exocet, Arial, sans-serif;
     background-color: #000
 }
 
