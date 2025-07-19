@@ -14,15 +14,39 @@
 <div>
     @if(loading)
     {
-        <h5>Loading Glyphs...</h5>
+        <h5>Loading Glyphs...(Refresh if not loaded in ~5 seconds)</h5>
     }
-    @for (int i = 0; i < _spriteDataUrls.Count; i++)
-    {
-        int _index = i;
-        <button class="glyph-link glyph">
-            <img src="@_spriteDataUrls[i]" alt="Sprite @_index" style="width:@_spriteWidth px; height:@_spriteHeight px;" />
-        </button>        
-    }
+    <div>
+        @if(!loading)
+            @for(int g = 0; g < sequence.Length; g++)
+            {
+                int glyphNumber = g;
+                string _spriteDataUrl = _spriteDataUrls[sequence[g]];
+                <button class="glyph-link glyph" disabled>
+                    <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
+                </button>
+            }
+    </div>
+
+    <br />
+
+    <div>
+        <button class="btn btn-outline-secondary" type="button" @onclick="Submit">Submit</button>
+        <button class="btn btn-danger" @onclick="ClearSequence">Clear Sequence</button>
+    </div>
+
+    <br />
+
+    <div>
+        @for (int i = 0; i < _spriteDataUrls.Count; i++)
+        {
+            int glyphNumber = i;
+            string _spriteDataUrl = _spriteDataUrls[i];
+            <button class="glyph-link glyph" @onclick="() => EnterGlpyh(glyphNumber)">
+                <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
+            </button>        
+        }
+    </div>
 </div>
 
 @code {
@@ -36,6 +60,9 @@
 
     private List<string> _spriteDataUrls = new List<string>();
 
+    private int[] sequence = new int[7] { 31, 22, 30, 19, 5, 7, 1 };
+    private int sequenceIndex = 0;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -47,5 +74,27 @@
             loading = false;
             StateHasChanged();            
         }        
+    }
+
+    private async Task Submit()
+    {
+        
+    }
+
+    private void EnterGlpyh(int glyphNumber)
+    {
+        if (sequenceIndex < sequence.Length)
+        {
+            sequence[sequenceIndex++] = glyphNumber;
+            return;
+        }
+        ClearSequence();
+    }
+
+    private void ClearSequence()
+    {
+        sequenceIndex = 0;
+        sequence = new int[7];
+        StateHasChanged();
     }
 }

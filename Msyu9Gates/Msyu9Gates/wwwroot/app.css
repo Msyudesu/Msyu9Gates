@@ -130,8 +130,13 @@ h1:focus {
 }
 
 .glyph {
-    border-radius: 50px;
+    border-radius: 75px;
     border-color: black;
+    border-width: 1px;
+    border-style: dashed; 
+    border-width: 5px;
+    padding-right: 10px;
+    padding-bottom: 10px;
     background-color: black;
 }
 
@@ -142,7 +147,6 @@ h1:focus {
 .glyph-primary {
     color: #000;
     background-color: black;
-    border-color: black;
 }
 
 .glyph:focus, .glyph:active:focus, .glyph-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -150,7 +154,6 @@ h1:focus {
 }
 
 .glyph:hover {
-    resize: 110%;
     background-color: black;
-    border-color: blue;
+    border-color: red;
 }
