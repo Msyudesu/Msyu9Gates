@@ -1,19 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
-using Msyu9Gates.Data;
+﻿using Msyu9Gates.Data;
 using Msyu9Gates.Lib;
 using Msyu9Gates.Utils;
 
 namespace Msyu9Gates
 {
-    internal class Gate
+    public class Gate
     {
-        internal string? Name { get; set; }
-        private Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();
-        internal Difficulty GateDifficulty { get; set; } = Difficulty.None;
-        internal AttemptHistory history = new AttemptHistory();
+        public string? Name { get; set; }
+        private Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();        
+        public Difficulty GateDifficulty { get; set; } = Difficulty.None;
+        public AttemptHistory history = new AttemptHistory();
         private IConfiguration _config;
 
-        internal enum Difficulty
+        public enum Difficulty
         {
             None,       /// <summary>No difficulty set / not applicable. Nothing to solve</summary> 
             Easy,       /// <summary>[ 1 - 8  HOURS  ]  Easiest difficulty level. Very simple puzzles, entry-level cryptography (easy pencil/paper solves), or riddles</summary> 
@@ -24,19 +23,30 @@ namespace Msyu9Gates
             Msyu,       /// <summary>[ 3+     MONTHS ]  Borderline impossible, the type of challenge Msyu is notorius for crafting as punishment</summary> 
         }
 
-        internal enum GateKeyType
+
+        /// <summary>
+        /// Identify which Key is being used for the stage of the gate.
+        /// Options: A, B, C.
+        /// </summary>
+        public enum GateKeyType
         { 
             A = 1,
             B = 2,
             C = 3
         }
 
-        internal Gate(IConfiguration config)
+        public Gate(IConfiguration config)
         {
             _config = config;
         }
 
-        internal string GetDifficult() => GateDifficulty switch
+        /// <summary>
+        /// Retrieves a string representation of the current difficulty level.
+        /// </summary>
+        /// <returns>A string that describes the difficulty level. Possible values include "None", "Easy", "Medium", 
+        /// "Challenge", "Hard", "Extremely Hard", "Msyu's Usual, Utterly Unfair Insanity", or "Unknown"  if the
+        /// difficulty level is not recognized.</returns>
+        public string GetDifficult() => GateDifficulty switch
         {
             Difficulty.None => "None",
             Difficulty.Easy => "Easy",
@@ -48,9 +58,13 @@ namespace Msyu9Gates
             _ => "Unknown"
         };
 
-        internal int GetNumberOfKeys() => Keys.Count;
+        public int GetNumberOfKeys() => Keys.Count;
 
-        internal GateResponse CheckKey(string _key, string? subKeyID = null)
+        public List<string> GetHistory() => history.GetAttempts();
+
+        public void ResetHistory() => history.ClearHistory();
+
+        public GateResponse CheckKey(string _key, string? subKeyID = null)
         {
             string _correctKey = _config.GetValue<string>($"Keys:{subKeyID}") ?? "";
 
@@ -59,13 +73,17 @@ namespace Msyu9Gates
             if (!string.IsNullOrWhiteSpace(_key) && !string.IsNullOrWhiteSpace(_correctKey))
             {
                 this.history.SaveAttempt(_key);
-                if (_key.Equals(_config.GetValue<string>($"Keys:{subKeyID}")))
+                if (_key.Equals(_correctKey))
                 {
                     CheckSpecialConditions(_key);
                     response.Success = true;
+                    return response;
                 }
+                response.Message = $"Key was valid but incorrect -> \"{_key}\".\nTry again.";
                 response.Success = false;
+                return response;
             }
+            response.Errors.Add($"Key was blank or invalid -> {_key}");
             response.Message = $"Key was blank or invalid -> {_key}";
             return response;
         }

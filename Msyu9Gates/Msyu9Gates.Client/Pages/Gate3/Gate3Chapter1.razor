@@ -1,0 +1,183 @@
+﻿@page "/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
+
+<PageTitle>Gate III - Chapter I</PageTitle>
+
+<script>
+    window.setAudioVolume = (audioElement, volume) => {
+        if (audioElement) {
+            audioElement.volume = volume;
+        }
+    };
+</script>
+
+<h3 style="color: red">
+    Gate III - Chapter I
+</h3>
+<p>Gate Difficulty: @difficulty</p>
+
+<br />
+
+<!--<input type="test" readonly class="form-control bg-dark" style="color: white; height: 80px; word-wrap: break-word" placeholder="" aria-label="" aria-describedby="basic-addon2" @bind="_gateMessage">-->
+
+<textarea readonly class="form-control bg-dark"
+          style="color: white; height: 80px; white-space: pre-wrap; resize: none"
+          @bind="_gateMessage"></textarea>
+
+<br />
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Enter Key" aria-label="Enter Key" aria-describedby="basic-addon2" @bind="_key">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" @onclick="Submit">Submit</button>
+    </div>
+</div>
+
+<br />
+
+<h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
+@if (_attempts.Count > 15)
+{
+    <p style="color: yellow">Hint 1/2: Let the melody guide you down to where you must go.</p>
+}
+@if (_attempts.Count > 50)
+{
+    <p style="color: red">Hint 2/2: Identify the track name from a game once popular with Born Gosu members.</p>
+}
+<ul>    
+    @if (_attempts != null) 
+    {        
+        @foreach (var attempt in _attempts)
+        {
+            <li>@attempt</li>
+        }
+    }
+</ul>
+
+
+<div class="">
+    <div class="">
+        <audio @ref="audioRef" volume=@volume autoplay hidden loop>
+            <source src=@audioSrc />
+        </audio>
+    </div>
+</div>
+
+@code {
+    const int gateNumber = 3;
+    string _key = string.Empty;
+    bool playing = false;
+    float volume = 0.10f;
+    string audioSrc = @"\Sounds\21153823998B.mp3";
+    ElementReference audioRef;
+    List<string> _attempts = new List<string>();
+    string _gateMessage = "";
+
+    string difficulty = string.Empty;
+
+    private HttpClient http = new HttpClient();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {            
+            await js.InvokeVoidAsync("setAudioVolume", audioRef, volume);
+            await GetRecentAttempts();
+            await GetDifficulty();
+        }
+    }
+
+    private async Task Submit()
+    {
+        if(_key.ToUpper().Equals("RESET"))
+        {
+            await ResetAttempts();
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_key))
+        {
+            Uri uri = new Uri(nav.BaseUri + "api/CheckKey");
+            GateRequest request = new GateRequest(key: _key.ToUpper(), keyID: "0007", gate: gateNumber);
+
+            var response = await http.PostAsJsonAsync(uri, request);
+            if (!response.IsSuccessStatusCode)
+            {
+                await js.InvokeVoidAsync("alert", "Failed to connect to the server.");
+                return;
+            }
+
+            GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+
+            if (gateResponse is null)
+            {
+                await js.InvokeVoidAsync("alert", "Failed to read response from server.");
+                return;
+            }
+
+            if (gateResponse.Success)
+            {
+                await js.InvokeVoidAsync("alert", $"Key Obtained: 0007_{_key.ToUpper()}");
+                nav.NavigateTo(nav.BaseUri + "gate3", forceLoad: true);
+            }
+            else
+            {
+                _gateMessage = gateResponse.Message ?? "";
+                if (gateResponse.Errors.Count > 0)
+                {
+                    _gateMessage += "\nErrors:";
+                    foreach(var error in gateResponse.Errors)
+                    {
+                        _gateMessage += $"\n{error}";
+                    }
+                }
+            }
+            await GetRecentAttempts();
+        }
+    }
+
+    private async Task GetDifficulty()
+    {
+        GateRequest request = new GateRequest(key: string.Empty, keyID: "0007", gate: gateNumber);
+
+        Uri difficultyUri = new Uri(nav.BaseUri + "api/GetDifficulty");
+        var response = await http.PostAsJsonAsync(difficultyUri, request);
+
+        if (response.IsSuccessStatusCode)
+            difficulty = await response.Content.ReadAsStringAsync();
+        else
+            difficulty = "Failed to load difficulty from Server";
+    }
+
+    private async Task GetRecentAttempts()
+    {
+        int gateNumber = 3;
+        GateRequest request = new GateRequest(key: string.Empty, keyID: "0007", gate: gateNumber);
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/GetAttempts");
+
+
+        var response = await http.PostAsJsonAsync(attemptsUri, request);
+
+        if (response.IsSuccessStatusCode)
+            _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "Failed to load attempts from Server" };
+        if(_attempts != null)
+            _attempts.Reverse();
+
+        StateHasChanged();
+    }
+
+    private async Task ResetAttempts()
+    {
+        int gateNumber = 3;
+        GateRequest request = new GateRequest(key: string.Empty, keyID: "0007", gate: gateNumber);
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/ResetAttempts");
+
+        var response = http.PostAsJsonAsync(attemptsUri, request).Result;
+
+        if (response.IsSuccessStatusCode)
+            await GetRecentAttempts();
+    }
+}

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
@@ -23,6 +24,11 @@ namespace Msyu9Gates
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+            {
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             var app = builder.Build();
 
@@ -60,11 +66,7 @@ namespace Msyu9Gates
         }
 
         private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
-        { 
-            Gate gate2 = new Gate(builder.Configuration);
-            gate2.Name = "Gate 2";
-            gate2.GateDifficulty = Gate.Difficulty.Medium;
-
+        {
             Gate gate3 = new Gate(builder.Configuration);
             gate3.Name = "Gate 3";
             gate3.GateDifficulty = Gate.Difficulty.Challenge;
@@ -73,27 +75,73 @@ namespace Msyu9Gates
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
             {
+                switch(request.Gate)
+                {
+                    case 3:
+                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request?.KeyID));
+                }
                 return Results.Ok();
             });
 
             // Attempt Logs
-            app.MapPost("/api/GetAttempts", ([FromBody] int gate) =>
+            app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
             {
-                switch (gate)
+                switch (request.Gate)
                 {
-                    case 2:
-                        return Results.Ok(gate2.history);
                     case 3:
-                        return Results.Ok(gate3.history);
+                        return Results.Ok(gate3.GetHistory());
+                    default:
+                        return Results.BadRequest("Invalid gate number");
+                }
+            });
+
+            app.MapPost("/api/ResetAttempts", ([FromBody] GateRequest request) =>
+            {
+                switch (request.Gate)
+                {
+                    case 3:
+                        gate3.ResetHistory();
+                        return Results.Ok();
+                    default:
+                        return Results.BadRequest("Invalid gate number");
+                }
+            });
+
+            app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
+            {
+                switch (request.Gate)
+                {
+                    case 3:
+                        return Results.Ok(gate3.GetDifficult());
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }
             });
 
             // Other
-            app.MapGet("/api/Is2CClueEnabled", () =>
+            app.MapGet("api/GetGate3Narrative", () =>
             {
-                return Results.Ok(GateFlags.Gate2C_ClueEnabled);
+                string narrative = string.Empty;
+                string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", "Gate3HomeNarrative.txt");
+                try
+                {
+                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (StreamReader reader = new StreamReader(fs))
+                        {
+                            narrative = reader.ReadToEnd();
+                        }
+                    }
+                }
+                catch (FileNotFoundException ex)
+                {
+                    return Results.NotFound($"Narrative file not found: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem($"An error occurred while reading the narrative file: {ex.Message}");
+                }
+                return Results.Ok(narrative);
             });
         }
     }
