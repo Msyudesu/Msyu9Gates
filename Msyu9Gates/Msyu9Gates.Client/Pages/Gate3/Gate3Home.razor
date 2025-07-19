@@ -10,7 +10,7 @@
 
 <div class="container">
     <article>
-        <h3> Gate III Chapter Select</h3>
+        <h3 style="color: red"> Gate III Chapter Select</h3>
         <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>
         <button class="btn btn-primary" disabled>Chapter II</button>
         <button class="btn btn-primary" disabled>Chapter III</button>
@@ -19,7 +19,7 @@
         <br />
 
         <p style="white-space: pre-wrap;">
-            @articleBody.ToString();
+            @articleBody.ToString()
         </p>
     </article>
 </div>
