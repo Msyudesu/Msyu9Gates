@@ -38,7 +38,7 @@
     <br />
 
     <div>
-        @for (int i = 0; i < _spriteDataUrls.Count; i++)
+        @for (int i = 1; i < _spriteDataUrls.Count; i++)
         {
             int glyphNumber = i;
             string _spriteDataUrl = _spriteDataUrls[i];
@@ -51,7 +51,7 @@
 
 @code {
 
-    private const string _spriteSheetPath = @"Images/spritesheet_inverted.png";
+    private const string _spriteSheetPath = @"Images/glyphs.png";
     const int _spriteWidth = 90;
     const int _spriteHeight = 90;
     const int _columns = 8;
