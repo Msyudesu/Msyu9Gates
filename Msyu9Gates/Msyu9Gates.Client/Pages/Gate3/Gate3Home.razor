@@ -11,8 +11,8 @@
 <div class="container">
     <article>
         <h3 style="color: red"> Gate III Chapter Select</h3>
-        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>
-        <button class="btn btn-primary" disabled>Chapter II</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>        
+        <button class="btn btn-primary" @onclick=@GoToChapterTwo>Chapter II</button>
         <button class="btn btn-primary" disabled>Chapter III</button>
         
         <br />
@@ -35,8 +35,7 @@
         articleBody = await response.Content.ReadFromJsonAsync<string>() ?? "Narrative Not Loaded";
     }    
 
-    private void GoToChapterOne()
-    {
-        nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
-    }
+    private void GoToChapterOne() => nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
+
+    private void GoToChapterTwo() => nav.NavigateTo("/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF");
 }

@@ -1,0 +1,51 @@
+﻿@page "/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
+
+<PageTitle>Gate III - Chapter I</PageTitle>
+
+<h3 style="color: red">
+    Gate III - Chapter II
+</h3>
+<p>Gate Difficulty: </p>
+
+<div>
+    @if(loading)
+    {
+        <h5>Loading Glyphs...</h5>
+    }
+    @for (int i = 0; i < _spriteDataUrls.Count; i++)
+    {
+        int _index = i;
+        <button class="glyph-link glyph">
+            <img src="@_spriteDataUrls[i]" alt="Sprite @_index" style="width:@_spriteWidth px; height:@_spriteHeight px;" />
+        </button>        
+    }
+</div>
+
+@code {
+
+    private const string _spriteSheetPath = @"Images/spritesheet_inverted.png";
+    const int _spriteWidth = 90;
+    const int _spriteHeight = 90;
+    const int _columns = 8;
+    const int _count = 39;
+    bool loading = true;
+
+    private List<string> _spriteDataUrls = new List<string>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _spriteDataUrls = await js.InvokeAsync<List<string>>(
+            "spriteUtils.extractSprites",
+            _spriteSheetPath, _spriteWidth, _spriteHeight, _columns, _count
+        );
+            loading = false;
+            StateHasChanged();            
+        }        
+    }
+}

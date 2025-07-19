@@ -128,3 +128,29 @@ h1:focus {
 .audio-player {
     color: black;
 }
+
+.glyph {
+    border-radius: 50px;
+    border-color: black;
+    background-color: black;
+}
+
+.glyph-link {
+    color: #006bb7;
+}
+
+.glyph-primary {
+    color: #000;
+    background-color: black;
+    border-color: black;
+}
+
+.glyph:focus, .glyph:active:focus, .glyph-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #000;
+}
+
+.glyph:hover {
+    resize: 110%;
+    background-color: black;
+    border-color: blue;
+}
