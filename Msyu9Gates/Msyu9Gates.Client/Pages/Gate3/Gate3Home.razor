@@ -1,0 +1,18 @@
+﻿@page "/gate3"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
+
+<PageTitle>Gate 3</PageTitle>
+
+<title>Gate III</title>
+
+<button class="btn btn-primary" @onclick=@GoToChapter1>Chapter I</button>
+
+@code {
+    private void GoToChapter1()
+    {
+        nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
+    }
+}

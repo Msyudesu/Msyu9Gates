@@ -30,6 +30,11 @@ a, .btn-link {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #000;
 }
 
+.btn:hover {
+    background-color: red;
+    border-color: red;
+}
+
 .content {
     padding-top: 1.1rem;
 }
@@ -118,4 +123,8 @@ h1:focus {
     padding: 20px;
     width: 450px;
     height: 450px;
+}
+
+.audio-player {
+    color: black;
 }

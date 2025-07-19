@@ -66,11 +66,7 @@ namespace Msyu9Gates
         }
 
         private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
-        { 
-            Gate gate2 = new Gate(builder.Configuration);
-            gate2.Name = "Gate 2";
-            gate2.GateDifficulty = Gate.Difficulty.Medium;
-
+        {
             Gate gate3 = new Gate(builder.Configuration);
             gate3.Name = "Gate 3";
             gate3.GateDifficulty = Gate.Difficulty.Challenge;
@@ -79,28 +75,51 @@ namespace Msyu9Gates
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
             {
+                switch(request.Gate)
+                {
+                    case 3:
+                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request?.KeyID));
+                }
                 return Results.Ok();
             });
 
             // Attempt Logs
-            app.MapPost("/api/GetAttempts", ([FromBody] int gate) =>
+            app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
             {
-                switch (gate)
+                switch (request.Gate)
                 {
-                    case 2:
-                        return Results.Ok(gate2.history);
                     case 3:
-                        return Results.Ok(gate3.history);
+                        return Results.Ok(gate3.GetHistory());
+                    default:
+                        return Results.BadRequest("Invalid gate number");
+                }
+            });
+
+            app.MapPost("/api/ResetAttempts", ([FromBody] GateRequest request) =>
+            {
+                switch (request.Gate)
+                {
+                    case 3:
+                        gate3.ResetHistory();
+                        return Results.Ok();
+                    default:
+                        return Results.BadRequest("Invalid gate number");
+                }
+            });
+
+            app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
+            {
+                switch (request.Gate)
+                {
+                    case 3:
+                        return Results.Ok(gate3.GetDifficult());
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }
             });
 
             // Other
-            app.MapGet("/api/Is2CClueEnabled", () =>
-            {
-                return Results.Ok(GateFlags.Gate2C_ClueEnabled);
-            });
+            
         }
     }
 }

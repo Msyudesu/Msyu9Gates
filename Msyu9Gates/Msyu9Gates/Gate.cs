@@ -59,7 +59,11 @@ namespace Msyu9Gates
         };
 
         public int GetNumberOfKeys() => Keys.Count;
-        
+
+        public List<string> GetHistory() => history.GetAttempts();
+
+        public void ResetHistory() => history.ClearHistory();
+
         public GateResponse CheckKey(string _key, string? subKeyID = null)
         {
             string _correctKey = _config.GetValue<string>($"Keys:{subKeyID}") ?? "";
@@ -69,13 +73,15 @@ namespace Msyu9Gates
             if (!string.IsNullOrWhiteSpace(_key) && !string.IsNullOrWhiteSpace(_correctKey))
             {
                 this.history.SaveAttempt(_key);
-                if (_key.Equals(_config.GetValue<string>($"Keys:{subKeyID}")))
+                if (_key.Equals(_correctKey))
                 {
                     CheckSpecialConditions(_key);
                     response.Success = true;
+                    return response;
                 }
-                response.Message = $"Key was valid but incorrect -> {_key}. Try again.";
+                response.Message = $"Key was valid but incorrect -> \"{_key}\".\nTry again.";
                 response.Success = false;
+                return response;
             }
             response.Errors.Add($"Key was blank or invalid -> {_key}");
             response.Message = $"Key was blank or invalid -> {_key}";
