@@ -6,12 +6,36 @@
 
 <PageTitle>Gate 3</PageTitle>
 
-<title>Gate III</title>
+<title>Gate III</title>  
 
-<button class="btn btn-primary" @onclick=@GoToChapter1>Chapter I</button>
+<div class="container">
+    <article>
+        <h3> Gate III Chapter Select</h3>
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>
+        <button class="btn btn-primary" disabled>Chapter II</button>
+        <button class="btn btn-primary" disabled>Chapter III</button>
+        
+        <br />
+        <br />
+
+        <p style="white-space: pre-wrap;">
+            @articleBody.ToString();
+        </p>
+    </article>
+</div>
 
 @code {
-    private void GoToChapter1()
+    string articleBody = string.Empty;
+    HttpClient http = new HttpClient();    
+
+    protected override async Task OnInitializedAsync()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/GetGate3Narrative");
+        var response = await http.GetAsync(uri);
+        articleBody = await response.Content.ReadFromJsonAsync<string>() ?? "Narrative Not Loaded";
+    }    
+
+    private void GoToChapterOne()
     {
         nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
     }

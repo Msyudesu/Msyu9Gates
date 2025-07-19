@@ -119,7 +119,30 @@ namespace Msyu9Gates
             });
 
             // Other
-            
+            app.MapGet("api/GetGate3Narrative", () =>
+            {
+                string narrative = string.Empty;
+                string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", "Gate3HomeNarrative.txt");
+                try
+                {
+                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (StreamReader reader = new StreamReader(fs))
+                        {
+                            narrative = reader.ReadToEnd();
+                        }
+                    }
+                }
+                catch (FileNotFoundException ex)
+                {
+                    return Results.NotFound($"Narrative file not found: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem($"An error occurred while reading the narrative file: {ex.Message}");
+                }
+                return Results.Ok(narrative);
+            });
         }
     }
 }

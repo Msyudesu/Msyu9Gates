@@ -7,7 +7,7 @@ namespace Msyu9Gates
     public class Gate
     {
         public string? Name { get; set; }
-        private Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();
+        private Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();        
         public Difficulty GateDifficulty { get; set; } = Difficulty.None;
         public AttemptHistory history = new AttemptHistory();
         private IConfiguration _config;
