@@ -38,12 +38,20 @@ namespace Msyu9Gates
 
             var environment = app.Environment;
 
-            using (var scope = app.Services.CreateScope())
+            try
             {
-                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate(); // Applies existing migrations from the Migrations folder. Be sure to build and commit migrations before deploying.
-                // DO NOT COMMIT DATABASE FILES.  .db, .db-wal, and .db-shm (added to gitignore)
-                logger.LogInformation($"Database Migration Completed in: Running in {environment}");
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    db.Database.Migrate(); // Applies existing migrations from the Migrations folder. Be sure to build and commit migrations before deploying.
+                                           // DO NOT COMMIT DATABASE FILES.  .db, .db-wal, and .db-shm (added to gitignore)
+                    logger.LogInformation($"Database Migration Completed in: Running in {environment}");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during database migration.");
+                throw; // Re-throw the exception to ensure the application does not start if migration fails.
             }
 
             logger.LogInformation($"Application Started: Running in {environment}");
