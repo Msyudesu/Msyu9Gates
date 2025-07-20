@@ -174,33 +174,61 @@ namespace Msyu9Gates
             });
 
             // Other
-            app.MapGet("api/GetGate3Narrative", (HttpContext httpContext) =>
+            app.MapPost("api/GetGateNarrative", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
                 var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
-                app.Logger.LogInformation($"Received GetGate3Narrative request from IP: {ip}");
+                app.Logger.LogInformation($"Received GetGateNarrative request from IP: {ip} for Gate: {request.Gate}, Chapter: {request.Chapter}");
 
-                string narrative = string.Empty;
-                string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", "Gate3HomeNarrative.txt");
-                try
+                string fileName = string.Empty;
+                
+                if(request.Gate == 3)
+                switch (request.Chapter)
                 {
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                    {
-                        using (StreamReader reader = new StreamReader(fs))
-                        {
-                            narrative = reader.ReadToEnd();
-                        }
-                    }
+                    case 1:
+                        fileName = "Gate3HomeNarrative.txt";
+                        break;
+                    case 2:
+                        fileName = "Gate3Chapter2Narrative.txt";
+                        break;
+                    case 3:
+                        fileName = "Gate3Chapter3Narrative.txt";
+                        break;
+                    default:
+                        return Results.BadRequest("Invalid chapter number");
                 }
-                catch (FileNotFoundException ex)
+
+                string narrativeText = string.Empty;
+
+                if (TryRetrieveNarrativeText(app, fileName, out narrativeText))
                 {
-                    return Results.NotFound($"Narrative file not found: {ex.Message}");
+                    GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: narrativeText);
+
+                    return Results.Ok(response);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return Results.Problem($"An error occurred while reading the narrative file: {ex.Message}");
+                    GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: false, message: "Failed to retrieve narrative text.");
+                    return Results.Problem("Failed to retrieve narrative text for Gate 3 Chapter 2.");
                 }
-                return Results.Ok(narrative);
             });
+        }
+
+        private static bool TryRetrieveNarrativeText(WebApplication app, string fileName, out string text)
+        {
+            string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", fileName);
+            try
+            {
+                using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                using var reader = new StreamReader(fs);
+                text = reader.ReadToEnd();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, $"Error reading file {fileName}: {ex.Message}");
+                text = string.Empty;
+                return false;
+            }
         }
 
         private static void CheckAndRebuildKeyData(WebApplication app, WebApplicationBuilder builder, IConfiguration config, ILogger logger)
