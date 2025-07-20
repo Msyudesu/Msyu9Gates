@@ -106,9 +106,9 @@ namespace Msyu9Gates
             app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
             {
                 switch (request.Gate)
-                {
+                {                    
                     case 3:
-                        return Results.Ok(gate3.GetHistory(request.Gate));
+                        return Results.Ok(gate3.GetHistory(request.Chapter));
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }

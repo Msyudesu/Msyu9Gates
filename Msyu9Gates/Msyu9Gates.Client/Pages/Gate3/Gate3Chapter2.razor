@@ -46,6 +46,46 @@
             </button>        
         }
     </div>
+
+    <br />
+
+    <h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
+    @if(_attempts.Count > 0)
+    {
+        @if (_attempts.Count > 15)
+        {
+            <p style="color: yellow">Hint 1/2: </p>
+        }
+        @if (_attempts.Count > 50)
+        {
+            <p style="color: red">Hint 2/2: </p>
+        }
+        <ul>
+            @if (_attempts != null && _attempts.Count > 0)
+            {
+                @foreach (var attempt in _attempts)
+                {
+                    if(attempt.Contains("Reset"))
+                    {
+                        <li style="color: red">@attempt</li>
+                        continue;
+                    }
+                    List<int> attemptIndexes = attempt.Substring(attempt.IndexOf("]") + 2)
+                                                    .Split('-').Select(int.Parse).ToList();
+                    <li>
+                        @for (int x = 0; x < attemptIndexes.Count; x++)
+                        {
+                            int glyphNumber = attemptIndexes[x];
+                            string _spriteDataUrl = _spriteDataUrls[glyphNumber];
+                            <button class="glyph-link glyph" disabled>
+                                <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
+                            </button>
+                        }
+                    </li>
+                }
+            }
+        </ul>
+    }
 </div>
 
 @code {
@@ -56,6 +96,10 @@
     const int _columns = 8;
     const int _count = 39;
     bool loading = true;
+
+    HttpClient http = new HttpClient();
+
+    List<string> _attempts = new List<string>();
 
     private List<string> _spriteDataUrls = new List<string>();
 
@@ -77,8 +121,10 @@
 
     private async Task Submit()
     {
+        if (sequence[0] == 0)
+            return;
+
         string _key = string.Join("-", sequence);
-        var http = new HttpClient();
         int gateNumber = 3;
 
         if (!string.IsNullOrWhiteSpace(_key))
@@ -106,9 +152,9 @@
                 await js.InvokeVoidAsync("alert", $"Key Obtained: 0008_{_key.ToUpper()}");
                 nav.NavigateTo(nav.BaseUri + "gate3", forceLoad: true);
             }
-        }
-
+        }        
         ClearSequence();
+        await GetRecentAttempts();
     }
 
     private void EnterGlpyh(int glyphNumber)
@@ -126,5 +172,36 @@
         sequenceIndex = 0;
         sequence = new int[7];
         StateHasChanged();
+    }
+
+    private async Task GetRecentAttempts()
+    {
+        int gateNumber = 3;
+        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 2);
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/GetAttempts");
+
+        _attempts.Clear();
+
+        var response = await http.PostAsJsonAsync(attemptsUri, request);
+
+        if (response.IsSuccessStatusCode)
+            _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "Failed to load attempts from Server" };
+        if (_attempts != null)
+        {            
+            _attempts.Reverse();
+        }
+        StateHasChanged();
+    }
+
+    private async Task ResetAttempts()
+    {
+        int gateNumber = 3;
+        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 2);
+        Uri attemptsUri = new Uri(nav.BaseUri + "api/ResetAttempts");
+
+        var response = http.PostAsJsonAsync(attemptsUri, request).Result;
+
+        if (response.IsSuccessStatusCode)
+            await GetRecentAttempts();
     }
 }
