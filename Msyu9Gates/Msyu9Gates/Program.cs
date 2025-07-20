@@ -54,6 +54,8 @@ namespace Msyu9Gates
                 throw; // Re-throw the exception to ensure the application does not start if migration fails.
             }
 
+            CheckAndRebuildKeyData(app, builder, app.Configuration, app.Logger);
+
             logger.LogInformation($"Application Started: Running in {environment}");
             BuildGatesAndRegisterApis(app, builder);
 
@@ -92,7 +94,7 @@ namespace Msyu9Gates
             gate3.Keys = new List<string>()
             {
                 "0007", "0008", "0009"
-            };            
+            };
 
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
@@ -178,6 +180,49 @@ namespace Msyu9Gates
                 }
                 return Results.Ok(narrative);
             });
+        }
+
+        private static void CheckAndRebuildKeyData(WebApplication app, WebApplicationBuilder builder, IConfiguration config, ILogger logger)
+        {
+            IConfiguration _config = config;
+            var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+
+            KeyManager keyManager = new KeyManager(_config, app.Logger, dbContextFactory);
+
+            bool triggerRebuild = _config.GetValue<bool>("Keys:TriggerRebuild");
+            logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}");
+
+            if (!triggerRebuild
+                && keyManager.LoadKeys().GetAwaiter().GetResult()
+                && keyManager.Keys.Count > 0)
+            {
+                app.Logger.LogInformation("Keys already exist in the database or rebuilt flag disabled. Rebuild aborted.");
+                return;
+            }
+
+            using (var db = dbContextFactory.CreateDbContext())
+            {
+                db.Database.ExecuteSqlRaw("DELETE FROM KeysDb; DELETE FROM sqlite_sequence WHERE name=''");
+                logger.LogInformation("Cleared existing keys from the database.");
+            }
+            app.Logger.LogInformation("No keys found in the database. Rebuilding key data...");
+            
+            for (int i = 1; i <= 6; i++)
+            {
+                keyManager.Keys.Add(new Key(id: i, keyValue: config.GetValue<string>($"Keys:000{i}") ?? "", dateDiscovered: DateTime.Now, discovered: true));
+                Console.WriteLine($"Discovered Key 000{i} added with value: {config.GetValue<string>($"Keys:000{i}") ?? ""}");
+            }
+            for (int i = 7; i <= 9; i++)
+            {
+                keyManager.Keys.Add(new Key(id: i, keyValue: config.GetValue<string>($"Keys:000{i}") ?? "", dateDiscovered: DateTime.Now, discovered: false));
+                Console.WriteLine($"Undiscovered Key 000{i} added with value: {config.GetValue<string>($"Keys:000{i}") ?? ""}");
+            }
+            
+            foreach (var key in keyManager.Keys)
+            {
+                keyManager.UpdateOrAddKey(key).GetAwaiter().GetResult();
+            }
+            app.Logger.LogInformation("Key data rebuilt successfully.");
         }
     }
 }
