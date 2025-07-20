@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
-using Msyu9Gates.Utils;
+using Msyu9Gates.Data.Models;
 using Msyu9Gates.Lib;
+using Msyu9Gates.Utils;
+using System.Drawing.Text;
+using System.Security.Cryptography;
 
 namespace Msyu9Gates
 {
@@ -27,7 +29,7 @@ namespace Msyu9Gates
 
             builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
             });
 
             var app = builder.Build();
@@ -67,12 +69,15 @@ namespace Msyu9Gates
 
         private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
         {
-            Gate gate3 = new Gate(builder.Configuration);
+            var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+            KeyManager keyManager = new KeyManager(builder.Configuration, app.Logger, dbContextFactory);
+            GateManager gate3 = new GateManager(builder.Configuration, app.Logger, dbContextFactory, keyManager);
             gate3.Name = "Gate 3";
-            gate3.GateDifficulty = Gate.Difficulty.Challenge;
-            gate3.Keys.Add("0007");
-            gate3.Keys.Add("0008");
-            gate3.Keys.Add("0009");
+            gate3.GateDifficulty = GateManager.Difficulty.Challenging;
+            gate3.Keys = new List<string>()
+            {
+                "0007", "0008", "0009"
+            };            
 
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
@@ -83,6 +88,18 @@ namespace Msyu9Gates
                         return Results.Ok(gate3.CheckKey(request.Key ?? "", request.Chapter));
                 }
                 return Results.Ok();
+            });
+
+            app.MapPost("/api/SaveKey", (Key key) =>
+            {
+                return Results.Ok(keyManager.UpdateOrAddKey(key));
+            });
+
+            app.MapGet("api/GetKeys", async () =>
+            {
+                await keyManager.LoadKeys();
+                List<string?> keys = keyManager.Keys.Where(x => x.Discovered == true).Select(x => x.KeyValue).ToList();
+                return Results.Ok(keys);
             });
 
             // Attempt Logs

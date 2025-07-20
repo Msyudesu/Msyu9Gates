@@ -1,5 +1,44 @@
 ﻿@page "/"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
 
 <PageTitle>Home</PageTitle>
 
 <h1>Gate Hub</h1>
+
+<div>
+    <h3>Discovered Keys:</h3>
+    <ul>
+        @foreach (var key in unlockedKeys)
+        {
+            <li>@key</li>
+        }
+    </ul>
+</div>
+
+@code {
+    HttpClient http = new HttpClient();
+    List<string> unlockedKeys = new List<string>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await UpdateUnlockedKeys();
+        }
+    }
+
+    private async Task UpdateUnlockedKeys()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/GetKeys");
+        var response = await http.GetAsync(uri);
+
+        if (response.IsSuccessStatusCode)
+        {
+            unlockedKeys = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "No Keys Unlocked." };
+        }
+        StateHasChanged();
+    }
+}
