@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Msyu9Gates/Msyu9Gates/msyu9gates.db
+/Msyu9Gates/Msyu9Gates/msyu9gates.db-shm
+/Msyu9Gates/Msyu9Gates/msyu9gates.db-wal
