@@ -6,13 +6,14 @@
 
 <PageTitle>Gate 3</PageTitle>
 
-<title>Gate III</title>  
+<title>Gate III</title>
+<p>Gate Difficulty: @difficulty</p>
 
 <div class="container">
     <article>
         <h3 style="color: red"> Gate III Chapter Select</h3>
-        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>
-        <button class="btn btn-primary" disabled>Chapter II</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>        
+        <button class="btn btn-primary" @onclick=@GoToChapterTwo>Chapter II</button>
         <button class="btn btn-primary" disabled>Chapter III</button>
         
         <br />
@@ -26,17 +27,40 @@
 
 @code {
     string articleBody = string.Empty;
-    HttpClient http = new HttpClient();    
+    HttpClient http = new HttpClient();
+    int gateNumber = 3;
+    string difficulty = "Unknown";
 
     protected override async Task OnInitializedAsync()
+    {
+        await GetNarrative();
+
+        await GetDifficulty();
+    }
+
+    private async Task GetNarrative()
     {
         Uri uri = new Uri(nav.BaseUri + "api/GetGate3Narrative");
         var response = await http.GetAsync(uri);
         articleBody = await response.Content.ReadFromJsonAsync<string>() ?? "Narrative Not Loaded";
-    }    
-
-    private void GoToChapterOne()
-    {
-        nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
     }
+
+    private async Task GetDifficulty()
+    {
+        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 1);
+
+        Uri difficultyUri = new Uri(nav.BaseUri + "api/GetDifficulty");
+        var response = await http.PostAsJsonAsync(difficultyUri, request);
+
+        GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+
+        if (response.IsSuccessStatusCode && gateResponse is not null)
+            difficulty = gateResponse.Message ?? "Unknown";
+        else
+            difficulty = "Failed to load difficulty from Server";
+    }
+
+    private void GoToChapterOne() => nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
+
+    private void GoToChapterTwo() => nav.NavigateTo("/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF");
 }

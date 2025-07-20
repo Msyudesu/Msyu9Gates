@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
-using Msyu9Gates.Utils;
+using Msyu9Gates.Data.Models;
 using Msyu9Gates.Lib;
+using Msyu9Gates.Utils;
+using System.Drawing.Text;
+using System.Security.Cryptography;
 
 namespace Msyu9Gates
 {
@@ -27,8 +29,8 @@ namespace Msyu9Gates
 
             builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+                options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
+            });            
 
             var app = builder.Build();
 
@@ -36,8 +38,23 @@ namespace Msyu9Gates
 
             var environment = app.Environment;
 
-            logger.LogInformation($"Application Started: Running in {environment}");
+            try
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    db.Database.Migrate(); // Applies existing migrations from the Migrations folder. Be sure to build and commit migrations before deploying.
+                                           // DO NOT COMMIT DATABASE FILES.  .db, .db-wal, and .db-shm (added to gitignore)
+                    logger.LogInformation($"Database Migration Completed in: Running in {environment}");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during database migration.");
+                throw; // Re-throw the exception to ensure the application does not start if migration fails.
+            }
 
+            logger.LogInformation($"Application Started: Running in {environment}");
             BuildGatesAndRegisterApis(app, builder);
 
             // Configure the HTTP request pipeline.
@@ -67,10 +84,15 @@ namespace Msyu9Gates
 
         private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
         {
-            Gate gate3 = new Gate(builder.Configuration);
+            var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+            KeyManager keyManager = new KeyManager(builder.Configuration, app.Logger, dbContextFactory);
+            GateManager gate3 = new GateManager(builder.Configuration, app.Logger, dbContextFactory, keyManager);
             gate3.Name = "Gate 3";
-            gate3.GateDifficulty = Gate.Difficulty.Challenge;
-
+            gate3.GateDifficulty = GateManager.Difficulty.Challenging;
+            gate3.Keys = new List<string>()
+            {
+                "0007", "0008", "0009"
+            };            
 
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
@@ -78,18 +100,30 @@ namespace Msyu9Gates
                 switch(request.Gate)
                 {
                     case 3:
-                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request?.KeyID));
+                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request.Chapter));
                 }
                 return Results.Ok();
+            });
+
+            app.MapPost("/api/SaveKey", (Key key) =>
+            {
+                return Results.Ok(keyManager.UpdateOrAddKey(key));
+            });
+
+            app.MapGet("api/GetKeys", async () =>
+            {
+                await keyManager.LoadKeys();
+                List<string?> keys = keyManager.Keys.Where(x => x.Discovered == true).Select(x => x.KeyValue).ToList();
+                return Results.Ok(keys);
             });
 
             // Attempt Logs
             app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
             {
                 switch (request.Gate)
-                {
+                {                    
                     case 3:
-                        return Results.Ok(gate3.GetHistory());
+                        return Results.Ok(gate3.GetHistory(request.Chapter));
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }
@@ -100,7 +134,7 @@ namespace Msyu9Gates
                 switch (request.Gate)
                 {
                     case 3:
-                        gate3.ResetHistory();
+                        gate3.ResetHistory(request.Gate);
                         return Results.Ok();
                     default:
                         return Results.BadRequest("Invalid gate number");
@@ -108,11 +142,12 @@ namespace Msyu9Gates
             });
 
             app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
-            {
+            {   
                 switch (request.Gate)
                 {
                     case 3:
-                        return Results.Ok(gate3.GetDifficult());
+                        GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: gate3.GetDifficulty());
+                        return Results.Ok(response);
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }
