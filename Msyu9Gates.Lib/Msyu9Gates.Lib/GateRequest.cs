@@ -3,13 +3,13 @@
     public class GateRequest
     {
         public string? Key { get; set; } = null;
-        public string? KeyID { get; set; } = String.Empty;
+        public int Chapter { get; set; }
         public int Gate { get; set; } = 0;
 
-        public GateRequest(string? key, string? keyID, int gate)
+        public GateRequest(string? key, int chapter, int gate)
         {
             Key = key;
-            KeyID = keyID;
+            Chapter = chapter;
             Gate = gate;
         }
     }

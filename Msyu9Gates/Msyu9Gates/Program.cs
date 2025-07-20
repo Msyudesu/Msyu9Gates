@@ -70,7 +70,9 @@ namespace Msyu9Gates
             Gate gate3 = new Gate(builder.Configuration);
             gate3.Name = "Gate 3";
             gate3.GateDifficulty = Gate.Difficulty.Challenge;
-
+            gate3.Keys.Add("0007");
+            gate3.Keys.Add("0008");
+            gate3.Keys.Add("0009");
 
             // Key Checks
             app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
@@ -78,7 +80,7 @@ namespace Msyu9Gates
                 switch(request.Gate)
                 {
                     case 3:
-                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request?.KeyID));
+                        return Results.Ok(gate3.CheckKey(request.Key ?? "", request.Chapter));
                 }
                 return Results.Ok();
             });
@@ -89,7 +91,7 @@ namespace Msyu9Gates
                 switch (request.Gate)
                 {
                     case 3:
-                        return Results.Ok(gate3.GetHistory());
+                        return Results.Ok(gate3.GetHistory(request.Gate));
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }
@@ -100,7 +102,7 @@ namespace Msyu9Gates
                 switch (request.Gate)
                 {
                     case 3:
-                        gate3.ResetHistory();
+                        gate3.ResetHistory(request.Gate);
                         return Results.Ok();
                     default:
                         return Results.BadRequest("Invalid gate number");
@@ -108,11 +110,12 @@ namespace Msyu9Gates
             });
 
             app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
-            {
+            {   
                 switch (request.Gate)
                 {
                     case 3:
-                        return Results.Ok(gate3.GetDifficult());
+                        GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: gate3.GetDifficulty());
+                        return Results.Ok(response);
                     default:
                         return Results.BadRequest("Invalid gate number");
                 }

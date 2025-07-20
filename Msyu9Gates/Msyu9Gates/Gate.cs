@@ -7,9 +7,9 @@ namespace Msyu9Gates
     public class Gate
     {
         public string? Name { get; set; }
-        private Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();        
+        public List<string> Keys { get; set; } = new List<string>();
+        private Dictionary<int, AttemptHistory> AttemptHistories = new Dictionary<int, AttemptHistory>();
         public Difficulty GateDifficulty { get; set; } = Difficulty.None;
-        public AttemptHistory history = new AttemptHistory();
         private IConfiguration _config;
 
         public enum Difficulty
@@ -28,16 +28,22 @@ namespace Msyu9Gates
         /// Identify which Key is being used for the stage of the gate.
         /// Options: A, B, C.
         /// </summary>
-        public enum GateKeyType
+        public enum GateChapter
         { 
-            A = 1,
-            B = 2,
-            C = 3
+            I = 1,
+            II = 2,
+            III = 3
         }
 
         public Gate(IConfiguration config)
         {
             _config = config;
+            AttemptHistories = new Dictionary<int, AttemptHistory>
+            {
+                { 1, new AttemptHistory() },
+                { 2, new AttemptHistory() },
+                { 3, new AttemptHistory() }
+            };
         }
 
         /// <summary>
@@ -46,33 +52,31 @@ namespace Msyu9Gates
         /// <returns>A string that describes the difficulty level. Possible values include "None", "Easy", "Medium", 
         /// "Challenge", "Hard", "Extremely Hard", "Msyu's Usual, Utterly Unfair Insanity", or "Unknown"  if the
         /// difficulty level is not recognized.</returns>
-        public string GetDifficult() => GateDifficulty switch
+        public string GetDifficulty() => GateDifficulty switch
         {
             Difficulty.None => "None",
             Difficulty.Easy => "Easy",
             Difficulty.Medium => "Medium",
-            Difficulty.Challenge => "Challenge",
+            Difficulty.Challenge => "Challenging",
             Difficulty.Hard => "Hard",
             Difficulty.Extreme => "Extremely Hard",
             Difficulty.Msyu => "Msyu's Usual, Utterly Unfair Insanity",
             _ => "Unknown"
         };
 
-        public int GetNumberOfKeys() => Keys.Count;
+        public List<string> GetHistory(int chapter) => AttemptHistories[chapter].GetAttempts();
 
-        public List<string> GetHistory() => history.GetAttempts();
+        public void ResetHistory(int chapter) => AttemptHistories[chapter].ClearHistory();
 
-        public void ResetHistory() => history.ClearHistory();
-
-        public GateResponse CheckKey(string _key, string? subKeyID = null)
+        public GateResponse CheckKey(string _key, int _chapter)
         {
-            string _correctKey = _config.GetValue<string>($"Keys:{subKeyID}") ?? "";
+            string _correctKey = _config.GetValue<string>($"Keys:{Keys[_chapter - 1]}") ?? "";
 
-            var response = new GateResponse(key: _key, keyID: subKeyID, success: false);
+            var response = new GateResponse(key: _key, chapter: _chapter, success: false);
 
             if (!string.IsNullOrWhiteSpace(_key) && !string.IsNullOrWhiteSpace(_correctKey))
             {
-                this.history.SaveAttempt(_key);
+                this.AttemptHistories[_chapter].SaveAttempt(_key);
                 if (_key.Equals(_correctKey))
                 {
                     CheckSpecialConditions(_key);

@@ -9,7 +9,6 @@
 <h3 style="color: red">
     Gate III - Chapter II
 </h3>
-<p>Gate Difficulty: </p>
 
 <div>
     @if(loading)
@@ -60,7 +59,7 @@
 
     private List<string> _spriteDataUrls = new List<string>();
 
-    private int[] sequence = new int[7] { 31, 22, 30, 19, 5, 7, 1 };
+    private int[] sequence = new int[7];
     private int sequenceIndex = 0;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -78,7 +77,38 @@
 
     private async Task Submit()
     {
-        
+        string _key = string.Join("-", sequence);
+        var http = new HttpClient();
+        int gateNumber = 3;
+
+        if (!string.IsNullOrWhiteSpace(_key))
+        {
+            Uri uri = new Uri(nav.BaseUri + "api/CheckKey");
+            GateRequest request = new GateRequest(key: _key.ToUpper(), chapter: 2, gate: gateNumber);
+
+            var response = await http.PostAsJsonAsync(uri, request);
+            if (!response.IsSuccessStatusCode)
+            {
+                await js.InvokeVoidAsync("alert", "Failed to connect to the server.");
+                return;
+            }
+
+            GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+
+            if (gateResponse is null)
+            {
+                await js.InvokeVoidAsync("alert", "Failed to read response from server.");
+                return;
+            }
+
+            if (gateResponse.Success)
+            {
+                await js.InvokeVoidAsync("alert", $"Key Obtained: 0008_{_key.ToUpper()}");
+                nav.NavigateTo(nav.BaseUri + "gate3", forceLoad: true);
+            }
+        }
+
+        ClearSequence();
     }
 
     private void EnterGlpyh(int glyphNumber)
