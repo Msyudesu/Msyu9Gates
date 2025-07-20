@@ -97,9 +97,12 @@ namespace Msyu9Gates
             };
 
             // Key Checks
-            app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/CheckKey", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
-                switch(request.Gate)
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received CheckKey request from IP: {ip}, Key: {request.Key}, Chapter: {request.Chapter}, Gate: {request.Gate}");
+
+                switch (request.Gate)
                 {
                     case 3:
                         return Results.Ok(gate3.CheckKey(request.Key ?? "", request.Chapter));
@@ -107,21 +110,30 @@ namespace Msyu9Gates
                 return Results.Ok();
             });
 
-            app.MapPost("/api/SaveKey", (Key key) =>
+            app.MapPost("/api/SaveKey", (HttpContext httpContext, Key key) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received SaveKey request from IP: {ip}, Key: {key.KeyValue}");
+
                 return Results.Ok(keyManager.UpdateOrAddKey(key));
             });
 
-            app.MapGet("api/GetKeys", async () =>
+            app.MapGet("api/GetKeys", async (HttpContext httpContext) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetKeys request from IP: {ip}");
+
                 await keyManager.LoadKeys();
                 List<string?> keys = keyManager.Keys.Where(x => x.Discovered == true).Select(x => x.KeyValue).ToList();
                 return Results.Ok(keys);
             });
 
             // Attempt Logs
-            app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/GetAttempts", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetAttempts request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {                    
                     case 3:
@@ -131,8 +143,11 @@ namespace Msyu9Gates
                 }
             });
 
-            app.MapPost("/api/ResetAttempts", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/ResetAttempts", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received ResetAttempts request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {
                     case 3:
@@ -143,8 +158,11 @@ namespace Msyu9Gates
                 }
             });
 
-            app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
-            {   
+            app.MapPost("api/GetDifficulty", (HttpContext httpContext,[FromBody] GateRequest request) =>
+            {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetDifficulty request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {
                     case 3:
@@ -156,8 +174,11 @@ namespace Msyu9Gates
             });
 
             // Other
-            app.MapGet("api/GetGate3Narrative", () =>
+            app.MapGet("api/GetGate3Narrative", (HttpContext httpContext) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetGate3Narrative request from IP: {ip}");
+
                 string narrative = string.Empty;
                 string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", "Gate3HomeNarrative.txt");
                 try
