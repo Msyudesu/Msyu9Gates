@@ -97,9 +97,12 @@ namespace Msyu9Gates
             };
 
             // Key Checks
-            app.MapPost("/api/CheckKey", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/CheckKey", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
-                switch(request.Gate)
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received CheckKey request from IP: {ip}, Key: {request.Key}, Chapter: {request.Chapter}, Gate: {request.Gate}");
+
+                switch (request.Gate)
                 {
                     case 3:
                         return Results.Ok(gate3.CheckKey(request.Key ?? "", request.Chapter));
@@ -107,21 +110,30 @@ namespace Msyu9Gates
                 return Results.Ok();
             });
 
-            app.MapPost("/api/SaveKey", (Key key) =>
+            app.MapPost("/api/SaveKey", (HttpContext httpContext, Key key) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received SaveKey request from IP: {ip}, Key: {key.KeyValue}");
+
                 return Results.Ok(keyManager.UpdateOrAddKey(key));
             });
 
-            app.MapGet("api/GetKeys", async () =>
+            app.MapGet("api/GetKeys", async (HttpContext httpContext) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetKeys request from IP: {ip}");
+
                 await keyManager.LoadKeys();
                 List<string?> keys = keyManager.Keys.Where(x => x.Discovered == true).Select(x => x.KeyValue).ToList();
                 return Results.Ok(keys);
             });
 
             // Attempt Logs
-            app.MapPost("/api/GetAttempts", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/GetAttempts", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetAttempts request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {                    
                     case 3:
@@ -131,8 +143,11 @@ namespace Msyu9Gates
                 }
             });
 
-            app.MapPost("/api/ResetAttempts", ([FromBody] GateRequest request) =>
+            app.MapPost("/api/ResetAttempts", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received ResetAttempts request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {
                     case 3:
@@ -143,8 +158,11 @@ namespace Msyu9Gates
                 }
             });
 
-            app.MapPost("api/GetDifficulty", ([FromBody] GateRequest request) =>
-            {   
+            app.MapPost("api/GetDifficulty", (HttpContext httpContext,[FromBody] GateRequest request) =>
+            {
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetDifficulty request from IP: {ip} for Gate: {request.Gate} Chapter: {request.Chapter}");
+
                 switch (request.Gate)
                 {
                     case 3:
@@ -156,30 +174,61 @@ namespace Msyu9Gates
             });
 
             // Other
-            app.MapGet("api/GetGate3Narrative", () =>
+            app.MapPost("api/GetGateNarrative", (HttpContext httpContext, [FromBody] GateRequest request) =>
             {
-                string narrative = string.Empty;
-                string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", "Gate3HomeNarrative.txt");
-                try
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
+                app.Logger.LogInformation($"Received GetGateNarrative request from IP: {ip} for Gate: {request.Gate}, Chapter: {request.Chapter}");
+
+                string fileName = string.Empty;
+                
+                if(request.Gate == 3)
+                switch (request.Chapter)
                 {
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                    {
-                        using (StreamReader reader = new StreamReader(fs))
-                        {
-                            narrative = reader.ReadToEnd();
-                        }
-                    }
+                    case 1:
+                        fileName = "Gate3HomeNarrative.txt";
+                        break;
+                    case 2:
+                        fileName = "Gate3Chapter2Narrative.txt";
+                        break;
+                    case 3:
+                        fileName = "Gate3Chapter3Narrative.txt";
+                        break;
+                    default:
+                        return Results.BadRequest("Invalid chapter number");
                 }
-                catch (FileNotFoundException ex)
+
+                string narrativeText = string.Empty;
+
+                if (TryRetrieveNarrativeText(app, fileName, out narrativeText))
                 {
-                    return Results.NotFound($"Narrative file not found: {ex.Message}");
+                    GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: narrativeText);
+
+                    return Results.Ok(response);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return Results.Problem($"An error occurred while reading the narrative file: {ex.Message}");
+                    GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: false, message: "Failed to retrieve narrative text.");
+                    return Results.Problem("Failed to retrieve narrative text for Gate 3 Chapter 2.");
                 }
-                return Results.Ok(narrative);
             });
+        }
+
+        private static bool TryRetrieveNarrativeText(WebApplication app, string fileName, out string text)
+        {
+            string filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "Misc", fileName);
+            try
+            {
+                using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                using var reader = new StreamReader(fs);
+                text = reader.ReadToEnd();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, $"Error reading file {fileName}: {ex.Message}");
+                text = string.Empty;
+                return false;
+            }
         }
 
         private static void CheckAndRebuildKeyData(WebApplication app, WebApplicationBuilder builder, IConfiguration config, ILogger logger)
