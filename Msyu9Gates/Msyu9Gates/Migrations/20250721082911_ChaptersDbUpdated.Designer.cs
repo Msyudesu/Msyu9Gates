@@ -11,14 +11,43 @@ using Msyu9Gates.Data;
 namespace Msyu9Gates.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250720035755_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250721082911_ChaptersDbUpdated")]
+    partial class ChaptersDbUpdated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
+
+            modelBuilder.Entity("Msyu9Gates.Data.Models.ChapterModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Chapter")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DateCompleted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateUnlocked")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GateId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChaptersDb");
+                });
 
             modelBuilder.Entity("Msyu9Gates.Data.Models.GateModel", b =>
                 {

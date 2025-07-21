@@ -46,5 +46,40 @@ namespace Msyu9Gates.Utils
             db.KeysDb.Remove(key);
             return await db.SaveChangesAsync() > 0;
         }
+
+        // Gates
+
+
+        // Chapters
+        public async static Task<ChapterModel> AddChapterAsync(ApplicationDbContext db, ChapterModel chapter)
+        {
+            db.ChaptersDb.Add(chapter);
+            await db.SaveChangesAsync();
+            return chapter;
+        }
+        public async static Task<ChapterModel?> GetChapterByIdAsync(ApplicationDbContext db, int id)
+        {
+            return await db.ChaptersDb.FindAsync(id);
+        }
+
+        public async static Task<List<ChapterModel>> GetAllChaptersAsync(ApplicationDbContext db)
+        {
+            return await db.ChaptersDb.ToListAsync();
+        }
+
+        public async static Task<bool> UpdateChapterAsync(ApplicationDbContext db, ChapterModel chapter)
+        {
+            db.ChaptersDb.Update(chapter);
+            return await db.SaveChangesAsync() > 0;
+        }
+
+        public async static Task<bool> DeleteChapterAsync(ApplicationDbContext db, int id)
+        {
+            var chapter = await db.ChaptersDb.FindAsync(id);
+            if (chapter == null)
+                return false;
+            db.ChaptersDb.Remove(chapter);
+            return await db.SaveChangesAsync() > 0;
+        }
     }
 }

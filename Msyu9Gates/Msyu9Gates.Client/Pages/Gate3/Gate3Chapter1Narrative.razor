@@ -35,12 +35,12 @@
 
     HttpClient http = new HttpClient();
     int gateNumber = 3;
-    int chapter = 2;
+    int chapter = 1;
 
     protected override async Task OnInitializedAsync()
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, 1);
+        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapter);
     }
 
     private void GoHome() => nav.NavigateTo("/gate3");

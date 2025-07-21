@@ -13,8 +13,12 @@ namespace Msyu9Gates
         private IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private KeyManager _keyManager;
 
-        public GateManager(IConfiguration config, ILogger log, IDbContextFactory<ApplicationDbContext> dbContextFactory, KeyManager keyManager)
+        public int GateId { get; set; } = 1; // Default to Gate I
+
+        public GateManager(IConfiguration config, ILogger log, IDbContextFactory<ApplicationDbContext> dbContextFactory, KeyManager keyManager, int gateId)
         {
+            this.GateId = gateId;
+
             _config = config;
             _log = log;
             _dbContextFactory = dbContextFactory;

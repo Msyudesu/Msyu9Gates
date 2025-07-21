@@ -40,7 +40,7 @@
     protected override async Task OnInitializedAsync()
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, 2);        
+        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapter);        
     }
 
     private void GoHome() => nav.NavigateTo("/gate3");
