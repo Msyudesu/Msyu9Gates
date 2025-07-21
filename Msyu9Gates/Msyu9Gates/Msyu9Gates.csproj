@@ -5,20 +5,21 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3c36f811-18dc-42cd-b23d-0ce532b9ec2f</UserSecretsId>
-  </PropertyGroup>
+  </PropertyGroup>  
 
   <ItemGroup>
-	  <None Update="Data\Misc\Gate3HomeNarrative.txt">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Data\Misc\Gate3Chapter2Narrative.txt">
+    <Content Include="Data\Misc\Gate3HomeNarrative.txt">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Data\Misc\Gate3Chapter2Narrative.txt">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Msyu9Gates.Lib\Msyu9Gates.Lib\Msyu9Gates.Lib.csproj" />
