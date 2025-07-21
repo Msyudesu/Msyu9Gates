@@ -19,14 +19,19 @@
         <br />
         <br />
 
-        <p style="white-space: pre-wrap;">
-            @articleBody.ToString()
-        </p>
+        @foreach (var (line, idx) in articleBody.Split('\n').Select((l, i) => (l, i)))
+        {
+            <div class="narrative-line" style="animation-delay:@($"{idx * 1.5:F1}s")">
+                @line
+            </div>
+            <br />
+        }
     </article>
 </div>
 
 @code {
     string articleBody = string.Empty;
+
     HttpClient http = new HttpClient();
     int gateNumber = 3;
     string difficulty = "Unknown";
@@ -34,7 +39,6 @@
     protected override async Task OnInitializedAsync()
     {
         await GetNarrative();
-
         await GetDifficulty();
     }
 
@@ -70,5 +74,5 @@
 
     private void GoToChapterOne() => nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
 
-    private void GoToChapterTwo() => nav.NavigateTo("/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF");
+    private void GoToChapterTwo() => nav.NavigateTo("/gate3/chapter2");
 }
