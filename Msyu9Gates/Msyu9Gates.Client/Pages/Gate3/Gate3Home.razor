@@ -10,32 +10,24 @@
 <PageTitle>Gate 3</PageTitle>
 
 <title>Gate III</title>
-<p>Gate Difficulty: @difficulty</p>
-
+<br />
 <div class="container">
     <article>
         <h3 style="color: red"> Gate III Chapter Select</h3>
         <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>        
         <button class="btn btn-primary" @onclick=@GoToChapterTwo>Chapter II</button>
-        <button class="btn btn-primary" disabled>Chapter III</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterThree>Chapter III</button>
         
         <br />
-        <br />
-
-        @foreach (var (line, idx) in articleBody.Split('\n').Select((l, i) => (l, i)))
-        {
-            <div class="narrative-line" style="animation-delay:@($"{idx * 1.5:F1}s")">
-                @line
-            </div>
-            <br />
-        }
+        <br />        
     </article>
 </div>
+<br />
+<p>Gate Difficulty: @difficulty</p>
+<p>Keys: 3</p>
 
 @code {
-    string? apiKey;
-
-    string articleBody = string.Empty;
+    string? apiKey;    
 
     HttpClient http = new HttpClient();
     int gateNumber = 3;
@@ -45,7 +37,6 @@
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
 
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, 1);
         await GetDifficulty();
     }    
 
@@ -64,7 +55,9 @@
             difficulty = "Failed to load difficulty from Server";
     }
 
-    private void GoToChapterOne() => nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
+    private void GoToChapterOne() => nav.NavigateTo("/gate3/chapter1");
 
     private void GoToChapterTwo() => nav.NavigateTo("/gate3/chapter2");
+
+    private void GoToChapterThree() => nav.NavigateTo("/gate3/chapter3");
 }
