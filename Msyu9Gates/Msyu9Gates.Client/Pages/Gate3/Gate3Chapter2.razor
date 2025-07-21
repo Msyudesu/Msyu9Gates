@@ -52,13 +52,17 @@
     <h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
     @if(_attempts.Count > 0)
     {
+        @if (_attempts.Count > 5)
+        {
+            <p style="color: yellow">Hint 1/3: Do you recognize the sigils? 7 Correct sigils will take you where you need to go. Ask Dr. Jackson.</p>
+        }
         @if (_attempts.Count > 15)
         {
-            <p style="color: yellow">Hint 1/2: </p>
+            <p style="color: orange">Hint 2/3: To know where you are going, you require an Address. Don't forget where you came from as well.</p>
         }
-        @if (_attempts.Count > 50)
+        @if (_attempts.Count > 30)
         {
-            <p style="color: red">Hint 2/2: </p>
+            <p style="color: red">Hint 3/3: The narrative contains a clue for where you must go. Did you find it? Search carefully and deeply, finding what you seek is not so straight-forward.</p>
         }
         <ul>
             @if (_attempts != null && _attempts.Count > 0)
