@@ -179,6 +179,11 @@ namespace Msyu9Gates
                 var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown IP";
                 app.Logger.LogInformation($"Received GetGateNarrative request from IP: {ip} for Gate: {request.Gate}, Chapter: {request.Chapter}");
 
+                if (!IsAPIKeyValid(httpContext, app.Configuration))
+                {
+                    return Results.Unauthorized();
+                }
+
                 string fileName = string.Empty;
                 
                 if(request.Gate == 3)
@@ -211,6 +216,16 @@ namespace Msyu9Gates
                     return Results.Problem("Failed to retrieve narrative text for Gate 3 Chapter 2.");
                 }
             });
+        }
+
+        private static bool IsAPIKeyValid(HttpContext context, IConfiguration config)
+        {
+            if (context.Request.Headers.TryGetValue("X-API-Key", out var apiKey))
+            {
+                string? validApiKey = config.GetValue<string>("ClientUnsecuredApiKey");
+                return !string.IsNullOrEmpty(validApiKey) && apiKey == validApiKey;
+            }
+            return false;
         }
 
         private static bool TryRetrieveNarrativeText(WebApplication app, string fileName, out string text)

@@ -3,6 +3,9 @@
 
 @inject NavigationManager nav
 @inject IJSRuntime js
+@inject IConfiguration config
+
+@using System.Configuration 
 
 <PageTitle>Gate 3</PageTitle>
 
@@ -30,6 +33,8 @@
 </div>
 
 @code {
+    string? apiKey;
+
     string articleBody = string.Empty;
 
     HttpClient http = new HttpClient();
@@ -38,24 +43,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await GetNarrative();
+        apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
+
+        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, 1);
         await GetDifficulty();
-    }
-
-    private async Task GetNarrative()
-    {
-        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 1);
-
-        Uri uri = new Uri(nav.BaseUri + "api/GetGateNarrative");
-        var response = await http.PostAsJsonAsync(uri, request);
-
-        GateResponse? gatResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
-
-        if (response.IsSuccessStatusCode && gatResponse is not null)
-            articleBody = gatResponse.Message ?? "Narrative Not Loaded";
-        else
-            articleBody = "Failed to load narrative from Server";
-    }
+    }    
 
     private async Task GetDifficulty()
     {
