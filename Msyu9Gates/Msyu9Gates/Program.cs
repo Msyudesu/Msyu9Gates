@@ -86,7 +86,7 @@ namespace Msyu9Gates
             gate3.GateDifficulty = GateManager.Difficulty.Challenging;
             gate3.Keys = new List<string>()
             {
-                "0007", "0008", "0009"
+                "0007", "0008", "0009",
             };     
 
             // Key Checks
@@ -182,17 +182,11 @@ namespace Msyu9Gates
                 if(request.Gate == 3)
                 switch (request.Chapter)
                 {
-                    case 1:
-                        fileName = "Gate3HomeNarrative.txt";
-                        break;
-                    case 2:
-                        fileName = "Gate3Chapter2Narrative.txt";
-                        break;
-                    case 3:
-                        fileName = "Gate3Chapter3Narrative.txt";
-                        break;
-                    default:
-                        return Results.BadRequest("Invalid chapter number");
+                    case 1: fileName = "Gate3HomeNarrative.txt"; break;
+                    case 2: fileName = "Gate3Chapter2Narrative.txt"; break;
+                    case 3: fileName = "Gate3Chapter3Narrative.txt"; break;
+                    case 4: fileName = "Gate3Chapter4Narrative.txt"; break;
+                    default: return Results.BadRequest("Invalid chapter number");
                 }
 
                 string narrativeText = string.Empty;

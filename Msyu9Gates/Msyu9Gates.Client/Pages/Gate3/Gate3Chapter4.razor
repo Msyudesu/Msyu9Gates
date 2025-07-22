@@ -1,13 +1,21 @@
-﻿@page "/gate3/A2BC7604-E551-45EC-AD4F-01C7190BD981"
+﻿@page "/gate3/9888A581-3587-4137-837C-D0BC1A11C83B"
 @rendermode InteractiveAuto
 
 @inject NavigationManager nav
 @inject IJSRuntime js
 
-<PageTitle>Gate III - Chapter III</PageTitle>
+<PageTitle>Gate III - Chapter IV</PageTitle>
+
+<style>    
+    html, body {
+        color: azure;
+        font-family: 'CipherFont', CipherFont, Arial, sans-serif;
+        background-color: #000
+    }
+</style>
 
 <h3 style="color: red">
-    Gate III - Chapter III
+    Gate III - Chapter IV
 </h3>
 
 <div>
@@ -18,7 +26,7 @@
     <div>
         @if (!loading)
         {
-            @for (int g = 0; g < sequence.Length; g++)
+            @for (int g = 0; g < sequence.Count; g++)
             {
                 int glyphNumber = g;
                 string _spriteDataUrl = _spriteDataUrls[sequence[g]];
@@ -26,11 +34,6 @@
                     <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
                 </button>
             }
-            int homeNumber = 31;
-            string _homeSpriteDataUrl = _spriteDataUrls[homeNumber];
-            <button class="glyph-link glyph" disabled>
-                <img src="@_homeSpriteDataUrl" alt="Sprite @homeNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
-            </button>
         }
     </div>
 
@@ -102,8 +105,7 @@
 
     private List<string> _spriteDataUrls = new List<string>();
 
-    private int[] sequence = new int[6];
-    private int sequenceIndex = 0;
+    List<int> sequence = new List<int>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -120,64 +122,74 @@
 
     private async Task Submit()
     {
-        if (sequence[0] == 0)
+        if (sequence.Count <= 6)
             return;
 
         string _key = string.Join("-", sequence);
-        _key += "-31"; // Home glyph
         int gateNumber = 3;
 
-        if (!string.IsNullOrWhiteSpace(_key))
+        try
         {
-            // Hard coded success. Still need to call CheckKey to log attempts.
-            if (_key.Equals("28-26-5-36-11-29-31"))
+            if (!string.IsNullOrWhiteSpace(_key))
             {
-                await js.InvokeVoidAsync("alert", "WARNING: Planet Core Destruction Imminent. Escape.");
-                nav.NavigateTo(nav.BaseUri + "gate3/3FBC748A-5C13-42B6-8FC4-53B2A9EB6B21", forceLoad: true);
+                Uri uri = new Uri(nav.BaseUri + "api/CheckKey");
+                GateRequest request = new GateRequest(key: _key.ToUpper(), chapter: 4, gate: gateNumber);
+
+                var response = await http.PostAsJsonAsync(uri, request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await js.InvokeVoidAsync("alert", "Failed to connect to the server.");
+                    return;
+                }
+
+                GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+
+                if (gateResponse is null)
+                {
+                    await js.InvokeVoidAsync("alert", "Failed to read response from server.");
+                    return;
+                }
+
+                if (gateResponse.Success)
+                {
+                    await js.InvokeVoidAsync("alert", $"Key Obtained: 0009_{_key.ToUpper()}");
+                    nav.NavigateTo(nav.BaseUri + "gate3/074AA61A-587F-4F71-939D-4DFB2C1D0B18", forceLoad: true);
+                }
             }
-
-            Uri uri = new Uri(nav.BaseUri + "api/CheckKey");
-            GateRequest request = new GateRequest(key: _key.ToUpper(), chapter: 3, gate: gateNumber);
-
-            var response = await http.PostAsJsonAsync(uri, request);
-            if (!response.IsSuccessStatusCode)
-            {
-                await js.InvokeVoidAsync("alert", "Failed to connect to the server.");
-                return;
-            }
-
-            GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
-
-            if (gateResponse is null)
-            {
-                await js.InvokeVoidAsync("alert", "Failed to read response from server.");
-                return;
-            }
+            ClearSequence();
+            await GetRecentAttempts();
         }
-        ClearSequence();
-        await GetRecentAttempts();
+        catch (Exception ex)
+        {
+#if DEBUG
+            await js.InvokeVoidAsync("alert", $"An error occurred. {ex.Message}");
+
+#else
+            await js.InvokeVoidAsync("alert", $"An error occurred. Did you try to submit nothing?");
+#endif
+            
+        }        
     }
 
     private void EnterGlpyh(int glyphNumber)
     {
-        if (sequenceIndex < sequence.Length)
+        if (sequence.Count >= 9)
         {
-            sequence[sequenceIndex++] = glyphNumber;
-            return;
+            ClearSequence();
         }
-        ClearSequence();
+        sequence.Add(glyphNumber);
+        StateHasChanged();
     }
 
     private void ClearSequence()
     {
-        sequenceIndex = 0;
-        sequence = new int[6];
+        sequence.Clear();
         StateHasChanged();
     }
 
     private async Task GetRecentAttempts()
     {
-        GateRequest request = new GateRequest(key: string.Empty, gate: 3, chapter: 3);
+        GateRequest request = new GateRequest(key: string.Empty, gate: 3, chapter: 4);
         Uri attemptsUri = new Uri(nav.BaseUri + "api/GetAttempts");
 
         _attempts.Clear();

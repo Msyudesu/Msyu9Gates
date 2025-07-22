@@ -3,6 +3,11 @@
     src: url('/fonts/exocet-blizzard-light.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'CipherFont';
+    src: url('/fonts/cipher-font.ttf') format('truetype');
+}
+
 html, body {
     color: azure;
     font-family: 'Exocet', Exocet, Arial, sans-serif;
