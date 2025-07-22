@@ -59,6 +59,19 @@
     <h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
     @if (_attempts.Count > 0)
     {
+        DateTime clue1Release;
+        DateTime.TryParse("07/22/25", out clue1Release);
+
+        DateTime clue2Release;
+        DateTime.TryParse("07/25/25", out clue2Release);
+        @if (_attempts.Count > 5 && DateTime.Today >= clue1Release)
+        {
+            <p style="color: yellow">Hint 1/2: Where did you come from?</p>
+        }
+        @if (_attempts.Count > 15 && DateTime.Today >= clue2Release)
+        {
+            <p style="color: orange">Hint 2/2: Midgard is the realm of man, the Tau'ri</p>
+        }
         <ul>
             @if (_attempts != null && _attempts.Count > 0)
             {

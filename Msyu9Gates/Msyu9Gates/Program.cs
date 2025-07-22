@@ -186,6 +186,7 @@ namespace Msyu9Gates
                     case 2: fileName = "Gate3Chapter2Narrative.txt"; break;
                     case 3: fileName = "Gate3Chapter3Narrative.txt"; break;
                     case 4: fileName = "Gate3Chapter4Narrative.txt"; break;
+                    case 5: fileName = "Gate3Conclusion.txt"; break;
                     default: return Results.BadRequest("Invalid chapter number");
                 }
 

@@ -62,6 +62,19 @@
     <h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
     @if (_attempts.Count > 0)
     {
+        DateTime clue1Release;
+        DateTime.TryParse("07/23/25", out clue1Release);
+
+        DateTime clue2Release;
+        DateTime.TryParse("07/27/25", out clue2Release);
+        @if (_attempts.Count > 5 && DateTime.Today >= clue1Release)
+        {
+            <p style="color: yellow">Hint 1/2: What you seek you may only find at the edge of what is known.</p>
+        }
+        @if (_attempts.Count > 30 && DateTime.Today >= clue2Release)
+        {
+            <p style="color: orange">Hint 2/2: Have you identified the origin of the language? It is Ancient.</p>
+        }
         <ul>
             @if (_attempts != null && _attempts.Count > 0)
             {
