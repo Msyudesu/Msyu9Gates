@@ -39,7 +39,8 @@ namespace Msyu9Gates
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
             var environment = app.Environment;
-                        
+
+
             try
             {
                 using (var scope = app.Services.CreateScope())
@@ -74,15 +75,13 @@ namespace Msyu9Gates
                 if(args.Length == 0)
                 {
                     logger.LogError("Retrying migration after deleting database files.");
-                    app.DisposeAsync().GetAwaiter().GetResult();
                     Main(new string[1] { "-retry" }); // Restart the application to attempt migration again.
                 }
                 else if(args.Length > 0 && args[0] == "-retry")
                 {
-                    logger.LogError("Restarting application to retry migration.");
-                    app.DisposeAsync().GetAwaiter().GetResult();
+                    logger.LogError("Retry failed. Exiting.");
                     return; // Exit the application if migration fails.
-                }                
+                }
             }
 
             logger.LogInformation($"Application Started: Running in {environment}");
@@ -114,6 +113,12 @@ namespace Msyu9Gates
 
         private static void BuildGatesAndRegisterApis(WebApplication app, WebApplicationBuilder builder)
         {
+            if (app.Configuration.GetValue<bool>("TriggerDbRebuild"))
+            {
+                CheckAndRebuildData(app, builder);
+                app.Logger.LogWarning("TriggerRebuild is set to true. Rebuilding data...");
+            }
+
             var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
             KeyManager keyManager = new KeyManager(builder.Configuration, app.Logger, dbContextFactory);
             
@@ -123,13 +128,7 @@ namespace Msyu9Gates
             gate3.Keys = new List<string>()
             {
                 "0007", "0008", "0009"
-            };
-
-            if (app.Configuration.GetValue<bool>("TriggerDbRebuild"))
-            {
-                CheckAndRebuildData(app, builder);
-                app.Logger.LogWarning("TriggerRebuild is set to true. Rebuilding data...");
-            }            
+            };     
 
             // Key Checks
             app.MapPost("/api/CheckKey", (HttpContext httpContext, [FromBody] GateRequest request) =>
@@ -289,15 +288,11 @@ namespace Msyu9Gates
             ChapterManager chapterManager = new ChapterManager(app.Configuration, app.Logger, dbContextFactory);
 
             bool triggerRebuild = app.Configuration.GetValue<bool>("Chapters:TriggerRebuild");            
+            app.Logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}. Database Data deletion/rebuild in progress...");
 
-            if (triggerRebuild)
-            {
-                app.Logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}. Database Data deletion/rebuild in progress...");
-
-                CheckAndRebuildKeyData(app, builder, keyManager, dbContextFactory);
-                //CheckAndRebuildGateData(app, builder, dbContextFactory);
-                CheckAndRebuildChapterData(app, builder, gateManager: new GateManager(app.Configuration, app.Logger, dbContextFactory, keyManager, gateId: 1), chapterManager, dbContextFactory);                
-            }
+            CheckAndRebuildKeyData(app, builder, keyManager, dbContextFactory);
+            //CheckAndRebuildGateData(app, builder, dbContextFactory);
+            CheckAndRebuildChapterData(app, builder, gateManager: new GateManager(app.Configuration, app.Logger, dbContextFactory, keyManager, gateId: 1), chapterManager, dbContextFactory);           
         }
         
         private static void CheckAndRebuildGateData(WebApplication app, WebApplicationBuilder builder, IDbContextFactory<ApplicationDbContext> dbContextFactory)
@@ -316,7 +311,6 @@ namespace Msyu9Gates
                 db.Database.ExecuteSqlRaw("DELETE FROM ChaptersDb; DELETE FROM sqlite_sequence WHERE name='ChaptersDb'");
                 app.Logger.LogInformation("Cleared existing chapters from the database.");
             }
-            app.Logger.LogInformation("No chapters found in the database. Rebuilding key data...");
 
             chapterManager.Chapters.Add(new Chapter(gateId: gateManager.GateId, chapter: Chapter.GateChapter.I, isLocked: true, isCompleted: false, dateUnlocked: null, dateCompleted: null));
             chapterManager.Chapters.Add(new Chapter(gateId: gateManager.GateId, chapter: Chapter.GateChapter.II, isLocked: true, isCompleted: false, dateUnlocked: null, dateCompleted: null));
@@ -336,7 +330,6 @@ namespace Msyu9Gates
                 db.Database.ExecuteSqlRaw("DELETE FROM KeysDb; DELETE FROM sqlite_sequence WHERE name='KeysDb'");
                 app.Logger.LogInformation("Cleared existing keys from the database.");
             }
-            app.Logger.LogInformation("No keys found in the database. Rebuilding key data...");
             
             for (int i = 1; i <= 6; i++)
             {
