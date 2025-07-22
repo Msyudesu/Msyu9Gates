@@ -41,6 +41,8 @@ namespace Msyu9Gates
 
             try
             {
+                BuildGatesAndRegisterApis(app, builder);
+
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -55,7 +57,7 @@ namespace Msyu9Gates
                 throw; // Re-throw the exception to ensure the application does not start if migration fails.
             }
 
-            BuildGatesAndRegisterApis(app, builder);
+            
 
             logger.LogInformation($"Application Started: Running in {environment}");
 
