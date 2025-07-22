@@ -6,11 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Msyu9Gates.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class ChaptersDbUpdated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ChaptersDb",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    GateId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Chapter = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsLocked = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DateUnlocked = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DateCompleted = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChaptersDb", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "GatesDb",
                 columns: table => new
@@ -45,6 +63,9 @@ namespace Msyu9Gates.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ChaptersDb");
+
             migrationBuilder.DropTable(
                 name: "GatesDb");
 

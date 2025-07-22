@@ -1,17 +1,17 @@
-﻿@page "/gate3/chapter2"
+﻿@page "/gate3/chapter1"
 @rendermode InteractiveAuto
 
 @inject NavigationManager nav
 @inject IJSRuntime js
 @inject IConfiguration config
 
-<PageTitle>Gate 3 - Chapter 2</PageTitle>
+<PageTitle>Gate III - Chapter I</PageTitle>
 
-<title>Gate III - Chapter 2</title>
+<title>Gate III - Chapter I</title>
 
 <div class="container">
     <article>
-        <h3 style="color: red"> Gate III - Chapter II</h3>
+        <h3 style="color: red"> Gate III - Chapter I</h3>
         <button class="btn btn-primary" @onclick=@GoHome>Go Back</button>
 
         <br />
@@ -25,7 +25,7 @@
             <br />
         }
 
-        <button class="btn btn-primary" @onclick=@GoToChapterTwo>Continue</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Continue</button>
     </article>
 </div>
 
@@ -35,16 +35,16 @@
 
     HttpClient http = new HttpClient();
     int gateNumber = 3;
-    int chapter = 2;
+    int chapter = 1;
 
     protected override async Task OnInitializedAsync()
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapter);        
+        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapter);
     }
 
     private void GoHome() => nav.NavigateTo("/gate3");
 
-    private void GoToChapterTwo() => nav.NavigateTo("/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF");
+    private void GoToChapterOne() => nav.NavigateTo("/gate3/BB729951-A643-4CD9-80EB-A7C6C1691A11");
 
 }

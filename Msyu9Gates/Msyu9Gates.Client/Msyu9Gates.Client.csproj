@@ -17,8 +17,4 @@
     <ProjectReference Include="..\..\Msyu9Gates.Lib\Msyu9Gates.Lib\Msyu9Gates.Lib.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\Images\" />
-  </ItemGroup>
-
 </Project>

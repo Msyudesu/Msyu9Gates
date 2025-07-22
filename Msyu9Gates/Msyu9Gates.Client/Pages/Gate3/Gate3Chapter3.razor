@@ -1,23 +1,24 @@
-﻿@page "/gate3/F13BBE1B-5E27-49CB-8AEF-DC525B5D8CCF"
+﻿@page "/gate3/A2BC7604-E551-45EC-AD4F-01C7190BD981"
 @rendermode InteractiveAuto
 
 @inject NavigationManager nav
 @inject IJSRuntime js
 
-<PageTitle>Gate III - Chapter II</PageTitle>
+<PageTitle>Gate III - Chapter III</PageTitle>
 
 <h3 style="color: red">
-    Gate III - Chapter II
+    Gate III - Chapter III
 </h3>
 
 <div>
-    @if(loading)
+    @if (loading)
     {
         <h5>Loading Glyphs...(Refresh if not loaded in ~5 seconds)</h5>
     }
     <div>
-        @if(!loading)
-            @for(int g = 0; g < sequence.Length; g++)
+        @if (!loading)
+        {
+            @for (int g = 0; g < sequence.Length; g++)
             {
                 int glyphNumber = g;
                 string _spriteDataUrl = _spriteDataUrls[sequence[g]];
@@ -25,6 +26,12 @@
                     <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
                 </button>
             }
+            int homeNumber = 31;
+            string _homeSpriteDataUrl = _spriteDataUrls[homeNumber];
+            <button class="glyph-link glyph" disabled>
+                <img src="@_homeSpriteDataUrl" alt="Sprite @homeNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
+            </button>
+        }
     </div>
 
     <br />
@@ -43,39 +50,36 @@
             string _spriteDataUrl = _spriteDataUrls[i];
             <button class="glyph-link glyph" @onclick="() => EnterGlpyh(glyphNumber)">
                 <img src="@_spriteDataUrl" alt="Sprite @glyphNumber" style="width:@_spriteWidth + 10px; height:@_spriteHeight + 10px; border-radius: 50px;" />
-            </button>        
+            </button>
         }
     </div>
 
     <br />
 
     <h5>Recent History: [@(_attempts.Count - 1) Attempts]</h5>
-    @if(_attempts.Count > 0)
+    @if (_attempts.Count > 0)
     {
         @if (_attempts.Count > 5)
         {
-            <p style="color: yellow">Hint 1/3: Do you recognize the sigils? 7 Correct sigils will take you where you need to go. Ask Dr. Jackson.</p>
+            <p style="color: yellow">Hint 1/2: .</p>
         }
         @if (_attempts.Count > 15)
         {
-            <p style="color: orange">Hint 2/3: To know where you are going, you require an Address. Don't forget where you came from as well.</p>
+            <p style="color: red">Hint 2/2: You're from Earth...</p>
         }
-        @if (_attempts.Count > 30)
-        {
-            <p style="color: red">Hint 3/3: The narrative contains a clue for where you must go. Did you find it? Search carefully and deeply, finding what you seek is not so straight-forward.</p>
-        }
+
         <ul>
             @if (_attempts != null && _attempts.Count > 0)
             {
                 @foreach (var attempt in _attempts)
                 {
-                    if(attempt.Contains("Reset"))
+                    if (attempt.Contains("Reset"))
                     {
                         <li style="color: red">@attempt</li>
                         continue;
                     }
                     List<int> attemptIndexes = attempt.Substring(attempt.IndexOf("]") + 2)
-                                                    .Split('-').Select(int.Parse).ToList();
+                    .Split('-').Select(int.Parse).ToList();
                     <li>
                         @for (int x = 0; x < attemptIndexes.Count; x++)
                         {
@@ -107,30 +111,20 @@
 
     private List<string> _spriteDataUrls = new List<string>();
 
-    private int[] sequence = new int[7];
+    private int[] sequence = new int[6];
     private int sequenceIndex = 0;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            if (firstRender)
-            {
-                _spriteDataUrls = await js.InvokeAsync<List<string>>(
-                "spriteUtils.extractSprites",
-                _spriteSheetPath, _spriteWidth, _spriteHeight, _columns, _count
-            );
-                loading = false;
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-            await js.InvokeVoidAsync("alert", $"Error loading glyphs: {ex.Message}");
-            loading = true;  // just leaves the tag at the top visibile if it fails to load.
+            _spriteDataUrls = await js.InvokeAsync<List<string>>(
+            "spriteUtils.extractSprites",
+            _spriteSheetPath, _spriteWidth, _spriteHeight, _columns, _count
+        );
+            loading = false;
             StateHasChanged();
         }
-                
     }
 
     private async Task Submit()
@@ -139,12 +133,13 @@
             return;
 
         string _key = string.Join("-", sequence);
+        _key += "-31"; // Home glyph
         int gateNumber = 3;
 
         if (!string.IsNullOrWhiteSpace(_key))
         {
             Uri uri = new Uri(nav.BaseUri + "api/CheckKey");
-            GateRequest request = new GateRequest(key: _key.ToUpper(), chapter: 2, gate: gateNumber);
+            GateRequest request = new GateRequest(key: _key.ToUpper(), chapter: 3, gate: gateNumber);
 
             var response = await http.PostAsJsonAsync(uri, request);
             if (!response.IsSuccessStatusCode)
@@ -163,10 +158,10 @@
 
             if (gateResponse.Success)
             {
-                await js.InvokeVoidAsync("alert", $"Key Obtained: 0008_{_key.ToUpper()}");
+                await js.InvokeVoidAsync("alert", $"Key Obtained: 0009_{_key.ToUpper()}");
                 nav.NavigateTo(nav.BaseUri + "gate3", forceLoad: true);
             }
-        }        
+        }
         ClearSequence();
         await GetRecentAttempts();
     }
@@ -184,14 +179,13 @@
     private void ClearSequence()
     {
         sequenceIndex = 0;
-        sequence = new int[7];
+        sequence = new int[6];
         StateHasChanged();
     }
 
     private async Task GetRecentAttempts()
     {
-        int gateNumber = 3;
-        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 2);
+        GateRequest request = new GateRequest(key: string.Empty, gate: 3, chapter: 3);
         Uri attemptsUri = new Uri(nav.BaseUri + "api/GetAttempts");
 
         _attempts.Clear();
@@ -201,7 +195,7 @@
         if (response.IsSuccessStatusCode)
             _attempts = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "Failed to load attempts from Server" };
         if (_attempts != null)
-        {            
+        {
             _attempts.Reverse();
         }
         StateHasChanged();
@@ -209,8 +203,7 @@
 
     private async Task ResetAttempts()
     {
-        int gateNumber = 3;
-        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 2);
+        GateRequest request = new GateRequest(key: string.Empty, gate: 3, chapter: 3);
         Uri attemptsUri = new Uri(nav.BaseUri + "api/ResetAttempts");
 
         var response = http.PostAsJsonAsync(attemptsUri, request).Result;

@@ -21,16 +21,5 @@ namespace Msyu9Gates.Data.Models
             Extreme,        /// <summary>[ 1 - 3  MONTHS ]  Extremely difficult, requires special knowledge, tools and/or skills. Close to but not entirely unfair or impossible.</summary> 
             Msyu,           /// <summary>[ 3+     MONTHS ]  Borderline impossible, the type of challenge Msyu is notorius for crafting as punishment</summary> 
         }
-
-        /// <summary>
-        /// Identify which Key is being used for the stage of the gate.
-        /// Options: I, II, III.
-        /// </summary>
-        public enum GateChapter
-        {
-            I = 1,
-            II = 2,
-            III = 3
-        }
     }
 }

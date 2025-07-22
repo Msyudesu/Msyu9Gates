@@ -106,9 +106,6 @@ namespace Msyu9Gates
             {
                 using (var db = _dbContextFactory.CreateDbContext())
                 {
-                    //db.KeysDb.RemoveRange(db.KeysDb);
-                    //await db.SaveChangesAsync();
-
                     int affectedRows = await db.Database.ExecuteSqlRawAsync(
                         sql: "DELETE FROM KeysDb; DELETE FROM SQLITE_SEQUENCE WHERE NAME='KeysDb';"
                         );
