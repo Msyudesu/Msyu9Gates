@@ -35,6 +35,13 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Data\Misc\Gate3Conclusion.txt">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Msyu9Gates.Lib\Msyu9Gates.Lib\Msyu9Gates.Lib.csproj" />
     <ProjectReference Include="..\Msyu9Gates.Client\Msyu9Gates.Client.csproj" />
