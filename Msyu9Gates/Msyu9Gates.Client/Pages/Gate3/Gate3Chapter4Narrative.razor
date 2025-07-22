@@ -1,17 +1,25 @@
-﻿@page "/gate3/chapter3"
+﻿@page "/gate3/3FBC748A-5C13-42B6-8FC4-53B2A9EB6B21"
 @rendermode InteractiveAuto
 
 @inject NavigationManager nav
 @inject IJSRuntime js
 @inject IConfiguration config
 
-<PageTitle>Gate 3 - Chapter 3</PageTitle>
+<PageTitle>Gate III - Chapter IV</PageTitle>
 
-<title>Gate III - Chapter 3</title>
+<style>
+    html, body {
+        color: azure;
+        font-family: 'CipherFont', CipherFont, Arial, sans-serif;
+        background-color: #000
+    }
+</style>
+
+<title>Gate III - Chapter IV</title>
 
 <div class="container">
     <article>
-        <h3 style="color: red"> Gate III - Chapter III</h3>
+        <h3 style="color: red"> Gate III - Chapter IV</h3>
         <button class="btn btn-primary" @onclick=@GoHome>Go Back</button>
 
         <br />
@@ -25,7 +33,7 @@
             <br />
         }
 
-        <button class="btn btn-primary" @onclick=@GoToChapterThree>Continue</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterTwo>Continue</button>
     </article>
 </div>
 
@@ -35,7 +43,7 @@
 
     HttpClient http = new HttpClient();
     int gateNumber = 3;
-    int chapter = 3;
+    int chapter = 4;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +53,6 @@
 
     private void GoHome() => nav.NavigateTo("/gate3");
 
-    private void GoToChapterThree() => nav.NavigateTo("/gate3/A2BC7604-E551-45EC-AD4F-01C7190BD981");
+    private void GoToChapterTwo() => nav.NavigateTo("/gate3/9888A581-3587-4137-837C-D0BC1A11C83B");
 
 }

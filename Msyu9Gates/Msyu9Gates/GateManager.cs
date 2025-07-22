@@ -30,7 +30,13 @@ namespace Msyu9Gates
             {
                 { 1, new AttemptHistory() },
                 { 2, new AttemptHistory() },
-                { 3, new AttemptHistory() }
+                { 3, new AttemptHistory() },
+                { 4, new AttemptHistory() },
+                { 5, new AttemptHistory() },
+                { 6, new AttemptHistory() },
+                { 7, new AttemptHistory() },
+                { 8, new AttemptHistory() },
+                { 9, new AttemptHistory() }
             };
         }
 
@@ -58,7 +64,17 @@ namespace Msyu9Gates
 
         public GateResponse CheckKey(string _key, int _chapter)
         {
-            string _correctKey = _config.GetValue<string>($"Keys:{Keys![_chapter - 1]}") ?? "";
+            string _correctKey = string.Empty;
+
+            // Special case for Gate 3
+            if (this.GateId == 3 && _chapter == 4)
+            {
+                _correctKey = _config.GetValue<string>($"Keys:{Keys![_chapter - 2]}") ?? "";
+            }
+            else
+            {
+                _correctKey = _config.GetValue<string>($"Keys:{Keys![_chapter - 1]}") ?? "";
+            }               
 
             var response = new GateResponse(key: _key, chapter: _chapter, success: false);
 
