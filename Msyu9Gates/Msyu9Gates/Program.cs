@@ -56,22 +56,26 @@ namespace Msyu9Gates
             {
                 logger.LogError(ex, "An error occurred during database migration or data rebuild. Deleting Database file.");
 
-                if (File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db")))
+                string db_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db");
+                string db_wal_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-wal");
+                string db_shm_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-shm");
+
+                if (File.Exists(db_path))
                 {
+                    File.Delete(db_path);
                     logger.LogWarning("Database file found: msyu9gates.db -- Deleting.");
                 }
-                else
+                if(File.Exists(db_wal_path))
                 {
-                    logger.LogWarning("Database file not found: msyu9gates.db. Ensure the database is created before running the application.");
-                }
-                if(File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-wal")))
-                {
+                    File.Delete(db_wal_path);
                     logger.LogWarning("Database WAL file found: msyu9gates.db-wal -- Deleting.");
                 }
-                if (File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-shm")))
+                if (File.Exists(db_shm_path))
                 {
+                    File.Delete(db_shm_path);
                     logger.LogWarning("Database SHM file found: msyu9gates.db-shm -- Deleting.");
                 }
+
                 if(args.Length == 0)
                 {
                     logger.LogError("Retrying migration after deleting database files.");
