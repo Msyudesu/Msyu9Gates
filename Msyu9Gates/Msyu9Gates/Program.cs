@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
 using Msyu9Gates.Data.Models;
@@ -38,11 +39,18 @@ namespace Msyu9Gates
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
             var environment = app.Environment;
+                        
+            if(File.Exists("msyu9gates.db"))
+            {
+                logger.LogWarning("Database file found: msyu9gates.db");
+            }
+            else
+            {
+                logger.LogWarning("Database file not found: msyu9gates.db. Ensure the database is created before running the application.");
+            }
 
             try
             {
-                BuildGatesAndRegisterApis(app, builder);
-
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -57,7 +65,7 @@ namespace Msyu9Gates
                 throw; // Re-throw the exception to ensure the application does not start if migration fails.
             }
 
-            
+            BuildGatesAndRegisterApis(app, builder);
 
             logger.LogInformation($"Application Started: Running in {environment}");
 
@@ -98,22 +106,6 @@ namespace Msyu9Gates
             {
                 "0007", "0008", "0009"
             };
-
-            List<GateManager> gates = new List<GateManager>();
-            gates.Add(gate3);
-
-            // Clear Gate Data/Rebuild (appsettings flag needs to be set)
-            CheckAndRebuildGateData(app, builder);
-
-            // Clear Chapter Data/Rebuild (appsettings flag needs to be set)
-            foreach (var gate in gates)
-            {
-                app.Logger.LogInformation($"Rebuilding Chapter Data for {gate.Name} with Gate ID: {gate.GateId}");
-                CheckAndRebuildChapterData(app, builder, gate3);
-            }
-
-            // Clear Key Data/Rebuild (appsettings flag needs to be set)
-            CheckAndRebuildKeyData(app, builder);
 
             // Key Checks
             app.MapPost("/api/CheckKey", (HttpContext httpContext, [FromBody] GateRequest request) =>
@@ -265,19 +257,27 @@ namespace Msyu9Gates
             }
         }
 
-        private static void CheckAndRebuildGateData(WebApplication app, WebApplicationBuilder builder)
+        private static void CheckAndRebuildData(WebApplication app, WebApplicationBuilder builder)
         {
             var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
 
-            bool triggerRebuild = true;//_config.GetValue<bool>("Gates:TriggerRebuild");
-            app.Logger.LogWarning($"[Gates] TriggerRebuild is set to: {triggerRebuild}");
+            KeyManager keyManager = new KeyManager(app.Configuration, app.Logger, dbContextFactory);
+            ChapterManager chapterManager = new ChapterManager(app.Configuration, app.Logger, dbContextFactory);
 
-            if (!triggerRebuild)
+            bool triggerRebuild = app.Configuration.GetValue<bool>("Chapters:TriggerRebuild");            
+
+            if (triggerRebuild)
             {
-                app.Logger.LogInformation("Gates already exist in the database or rebuilt flag disabled. Rebuild aborted.");
-                return;
-            }
+                app.Logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}. Database Data deletion/rebuild in progress...");
 
+                CheckAndRebuildKeyData(app, builder, keyManager, dbContextFactory);
+                CheckAndRebuildGateData(app, builder, dbContextFactory);
+                CheckAndRebuildChapterData(app, builder, gateManager: new GateManager(app.Configuration, app.Logger, dbContextFactory, keyManager, gateId: 1), chapterManager, dbContextFactory);                
+            }
+        }
+        
+        private static void CheckAndRebuildGateData(WebApplication app, WebApplicationBuilder builder, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        {          
             using (var db = dbContextFactory.CreateDbContext())
             {
                 db.Database.ExecuteSqlRaw("DELETE FROM GatesDb; DELETE FROM sqlite_sequence WHERE name='GatesDb'");
@@ -285,23 +285,8 @@ namespace Msyu9Gates
             }
         }
 
-        private static void CheckAndRebuildChapterData(WebApplication app, WebApplicationBuilder builder, GateManager gateManager)
-        {
-            var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-
-            ChapterManager chapterManager = new ChapterManager(app.Configuration, app.Logger, dbContextFactory);
-
-            bool triggerRebuild = app.Configuration.GetValue<bool>("Chapters:TriggerRebuild");
-            app.Logger.LogWarning($"[Chapters] TriggerRebuild is set to: {triggerRebuild}");
-
-            if(!triggerRebuild
-                && chapterManager.LoadChapters().GetAwaiter().GetResult()
-                && chapterManager.Chapters.Count > 0)
-            {
-                app.Logger.LogInformation("Chapters already exist in the database or rebuilt flag disabled. Rebuild aborted.");
-                return;
-            }
-
+        private static void CheckAndRebuildChapterData(WebApplication app, WebApplicationBuilder builder, GateManager gateManager, ChapterManager chapterManager, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        {                           
             using (var db = dbContextFactory.CreateDbContext())
             {
                 db.Database.ExecuteSqlRaw("DELETE FROM ChaptersDb; DELETE FROM sqlite_sequence WHERE name='ChaptersDb'");
@@ -320,23 +305,8 @@ namespace Msyu9Gates
             app.Logger.LogInformation("Chapter data rebuilt successfully.");
         }
 
-        private static void CheckAndRebuildKeyData(WebApplication app, WebApplicationBuilder builder)
+        private static void CheckAndRebuildKeyData(WebApplication app, WebApplicationBuilder builder, KeyManager keyManager, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
-            var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-
-            KeyManager keyManager = new KeyManager(app.Configuration, app.Logger, dbContextFactory);
-
-            bool triggerRebuild = app.Configuration.GetValue<bool>("Keys:TriggerRebuild");
-            app.Logger.LogWarning($"[Keys] TriggerRebuild is set to: {triggerRebuild}");
-
-            if (!triggerRebuild
-                && keyManager.LoadKeys().GetAwaiter().GetResult()
-                && keyManager.Keys.Count > 0)
-            {
-                app.Logger.LogInformation("Keys already exist in the database or rebuilt flag disabled. Rebuild aborted.");
-                return;
-            }
-
             using (var db = dbContextFactory.CreateDbContext())
             {
                 db.Database.ExecuteSqlRaw("DELETE FROM KeysDb; DELETE FROM sqlite_sequence WHERE name='KeysDb'");
