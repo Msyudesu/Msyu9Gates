@@ -46,26 +46,6 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("ChaptersDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.GateModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GateDifficulty")
-                        .HasColumnType("INTEGER");
-
-                    b.PrimitiveCollection<string>("Keys")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GatesDb");
-                });
-
             modelBuilder.Entity("Msyu9Gates.Data.Models.KeyModel", b =>
                 {
                     b.Property<int>("Id")

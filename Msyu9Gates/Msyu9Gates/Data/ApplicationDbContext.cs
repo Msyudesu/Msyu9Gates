@@ -15,7 +15,7 @@ namespace Msyu9Gates.Data
         }
 
         public DbSet<KeyModel> KeysDb { get; set; }
-        public DbSet<GateModel> GatesDb { get; set; }
+        //public DbSet<GateModel> GatesDb { get; set; }
         public DbSet<ChapterModel> ChaptersDb { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

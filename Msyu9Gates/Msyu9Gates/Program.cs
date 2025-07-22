@@ -40,15 +40,6 @@ namespace Msyu9Gates
 
             var environment = app.Environment;
                         
-            if(File.Exists("msyu9gates.db"))
-            {
-                logger.LogWarning("Database file found: msyu9gates.db");
-            }
-            else
-            {
-                logger.LogWarning("Database file not found: msyu9gates.db. Ensure the database is created before running the application.");
-            }
-
             try
             {
                 using (var scope = app.Services.CreateScope())
@@ -58,14 +49,41 @@ namespace Msyu9Gates
                                            // DO NOT COMMIT DATABASE FILES.  .db, .db-wal, and .db-shm (added to gitignore)
                     logger.LogInformation($"Database Migration Completed in: Running in {environment}");
                 }
+                BuildGatesAndRegisterApis(app, builder);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred during database migration.");
-                throw; // Re-throw the exception to ensure the application does not start if migration fails.
-            }
+                logger.LogError(ex, "An error occurred during database migration or data rebuild. Deleting Database file.");
 
-            BuildGatesAndRegisterApis(app, builder);
+                if (File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db")))
+                {
+                    logger.LogWarning("Database file found: msyu9gates.db -- Deleting.");
+                }
+                else
+                {
+                    logger.LogWarning("Database file not found: msyu9gates.db. Ensure the database is created before running the application.");
+                }
+                if(File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-wal")))
+                {
+                    logger.LogWarning("Database WAL file found: msyu9gates.db-wal -- Deleting.");
+                }
+                if (File.Exists(Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-shm")))
+                {
+                    logger.LogWarning("Database SHM file found: msyu9gates.db-shm -- Deleting.");
+                }
+                if(args.Length == 0)
+                {
+                    logger.LogError("Retrying migration after deleting database files.");
+                    app.DisposeAsync().GetAwaiter().GetResult();
+                    Main(new string[1] { "-retry" }); // Restart the application to attempt migration again.
+                }
+                else if(args.Length > 0 && args[0] == "-retry")
+                {
+                    logger.LogError("Restarting application to retry migration.");
+                    app.DisposeAsync().GetAwaiter().GetResult();
+                    return; // Exit the application if migration fails.
+                }                
+            }
 
             logger.LogInformation($"Application Started: Running in {environment}");
 
@@ -106,6 +124,12 @@ namespace Msyu9Gates
             {
                 "0007", "0008", "0009"
             };
+
+            if (app.Configuration.GetValue<bool>("TriggerDbRebuild"))
+            {
+                CheckAndRebuildData(app, builder);
+                app.Logger.LogWarning("TriggerRebuild is set to true. Rebuilding data...");
+            }            
 
             // Key Checks
             app.MapPost("/api/CheckKey", (HttpContext httpContext, [FromBody] GateRequest request) =>
@@ -271,7 +295,7 @@ namespace Msyu9Gates
                 app.Logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}. Database Data deletion/rebuild in progress...");
 
                 CheckAndRebuildKeyData(app, builder, keyManager, dbContextFactory);
-                CheckAndRebuildGateData(app, builder, dbContextFactory);
+                //CheckAndRebuildGateData(app, builder, dbContextFactory);
                 CheckAndRebuildChapterData(app, builder, gateManager: new GateManager(app.Configuration, app.Logger, dbContextFactory, keyManager, gateId: 1), chapterManager, dbContextFactory);                
             }
         }

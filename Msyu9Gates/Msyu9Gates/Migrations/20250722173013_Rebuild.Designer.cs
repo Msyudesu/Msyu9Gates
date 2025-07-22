@@ -11,8 +11,8 @@ using Msyu9Gates.Data;
 namespace Msyu9Gates.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250721082911_ChaptersDbUpdated")]
-    partial class ChaptersDbUpdated
+    [Migration("20250722173013_Rebuild")]
+    partial class Rebuild
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,26 +47,6 @@ namespace Msyu9Gates.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ChaptersDb");
-                });
-
-            modelBuilder.Entity("Msyu9Gates.Data.Models.GateModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GateDifficulty")
-                        .HasColumnType("INTEGER");
-
-                    b.PrimitiveCollection<string>("Keys")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GatesDb");
                 });
 
             modelBuilder.Entity("Msyu9Gates.Data.Models.KeyModel", b =>
