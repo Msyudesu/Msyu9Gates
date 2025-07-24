@@ -14,9 +14,26 @@
 <div class="container">
     <article>
         <h3 style="color: red"> Gate III Chapter Select</h3>
-        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>        
-        <button class="btn btn-primary" @onclick=@GoToChapterTwo>Chapter II</button>
-        <button class="btn btn-primary" @onclick=@GoToChapterThree>Chapter III</button>
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Chapter I</button>
+        <span> | </span>
+        @if(_keyCount >= 7)
+        {
+            <button class="btn btn-primary" @onclick=@GoToChapterTwo>Chapter II</button>
+            <span> | </span>
+        }
+        else
+        {
+            <button class="btn btn-primary" disabled>Chapter II</button>
+            <span> | </span>
+        }
+        @if(_keyCount >= 8)
+        {
+            <button class="btn btn-primary" @onclick=@GoToChapterThree>Chapter III</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" disabled>Chapter III</button>
+        }
         
         <br />
         <br />        
@@ -33,12 +50,28 @@
     int gateNumber = 3;
     string difficulty = "Unknown";
 
+    int _keyCount = 0;
+
     protected override async Task OnInitializedAsync()
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
 
+        await GetKeys();
         await GetDifficulty();
-    }    
+    }
+
+    private async Task GetKeys()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/GetKeys");
+        var response = await http.GetAsync(uri);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var keys = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "No Keys Unlocked." };
+            _keyCount = keys.Count;
+        }
+        StateHasChanged();
+    }
 
     private async Task GetDifficulty()
     {
