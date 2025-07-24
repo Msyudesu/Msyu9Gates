@@ -291,7 +291,14 @@ namespace Msyu9Gates
             KeyManager keyManager = new KeyManager(app.Configuration, app.Logger, dbContextFactory);
             ChapterManager chapterManager = new ChapterManager(app.Configuration, app.Logger, dbContextFactory);
 
-            bool triggerRebuild = app.Configuration.GetValue<bool>("Chapters:TriggerRebuild");            
+            bool triggerRebuild = app.Configuration.GetValue<bool>("Chapters:TriggerRebuild");
+            
+            if (!triggerRebuild)
+            {
+                app.Logger.LogInformation("TriggerRebuild is disabled. Skipping database data deletion/rebuild.");
+                return;
+            }
+
             app.Logger.LogWarning($"TriggerRebuild is set to: {triggerRebuild}. Database Data deletion/rebuild in progress...");
 
             CheckAndRebuildKeyData(app, builder, keyManager, dbContextFactory);
