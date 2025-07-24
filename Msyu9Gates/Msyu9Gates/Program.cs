@@ -83,7 +83,7 @@ namespace Msyu9Gates
             
             GateManager gate3 = new GateManager(builder.Configuration, app.Logger, dbContextFactory, keyManager, gateId: 3);
             gate3.Name = "Gate 3";
-            gate3.GateDifficulty = GateManager.Difficulty.Challenging;
+            gate3.GateDifficulty = GateManager.Difficulty.Medium;
             gate3.Keys = new List<string>()
             {
                 "0007", "0008", "0009",
