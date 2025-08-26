@@ -1,6 +1,6 @@
 ﻿namespace Msyu9Gates.Lib;
 
-public class GateUtils
+public class Utils
 {
     public static string ToRoman(int number)
     {

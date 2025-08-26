@@ -26,7 +26,7 @@ else
             @for(int i = 1; i <= gateNumber; i++)
             {
                 int ch = i;
-                <button class="btn btn-primary" @onclick=@(() => nav.NavigateTo($@"/gate/{gateNumber}/chapter/{ch}/narrative"))>Chapter @GateUtils.ToRoman(ch)</button>
+                <button class="btn btn-primary" @onclick=@(() => nav.NavigateTo($@"/gate/{gateNumber}/chapter/{ch}/narrative"))>Chapter @Utils.ToRoman(ch)</button>
                 if(i < gateNumber) { <span> | </span> }
             
                 @*Example Disabled for use later when disabled logic is re-added*@
@@ -56,6 +56,6 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        title = $"Gate {GateUtils.ToRoman(gateNumber)}";
+        title = $"Gate {Utils.ToRoman(gateNumber)}";
     }
 }

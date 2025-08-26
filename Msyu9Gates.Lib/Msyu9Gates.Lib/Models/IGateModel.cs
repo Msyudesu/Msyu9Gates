@@ -12,4 +12,6 @@ public interface IGateModel
     public bool IsLocked { get; set; }
     public DateTime? DateUnlocked { get; set; }
     public DateTime? DateCompleted { get; set; }
+    public string? Narrative { get; set; }
+    public string? Conclusion { get; set; }
 }

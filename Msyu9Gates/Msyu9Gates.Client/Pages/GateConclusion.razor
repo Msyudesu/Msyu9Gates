@@ -39,7 +39,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        title = $"Gate {GateUtils.ToRoman(gateNumber)} - Conclusion";
+        title = $"Gate {Utils.ToRoman(gateNumber)} - Conclusion";
         articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapterNumber);
     }
 }
