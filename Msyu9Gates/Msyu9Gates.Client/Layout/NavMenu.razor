@@ -18,8 +18,8 @@
         {
             int gateNumber = i;
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@($"gate{gateNumber}")">
-                    <span aria-hidden="true"></span> <strong>@ToRoman(gateNumber)</strong>
+                <NavLink class="nav-link" href="@($"gate/{gateNumber}")">
+                    <span aria-hidden="true"></span> <strong>@GateUtils.ToRoman(gateNumber)</strong>
                 </NavLink>
             </div>
         }
@@ -27,24 +27,5 @@
 </div>
 
 @code {
-    private static string ToRoman(int number)
-    {
-        if (number < 1 || number > 3999) return number.ToString();
-        var numerals = new[]
-        {
-            (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
-            (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
-            (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")
-        };
-        var result = "";
-        foreach (var (value, numeral) in numerals)
-        {
-            while (number >= value)
-            {
-                result += numeral;
-                number -= value;
-            }
-        }
-        return result;
-    }
+    
 }

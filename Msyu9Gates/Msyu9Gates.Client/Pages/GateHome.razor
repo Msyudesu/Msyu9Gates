@@ -1,0 +1,93 @@
+﻿@page "/gate/{gateNumber:int}"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
+@inject IConfiguration config
+
+@using System.Configuration 
+
+<PageTitle>@title</PageTitle>
+
+@if(gateNumber < 3) // change these to gate statuses later.
+{
+    <img src="/Images/[AIGen] GateComplete.png" alt="Gate Complete" class="page-sign" />
+}
+else if(gateNumber > 3)
+{
+    <img src="/Images/[AIGen] GateLocked.png" alt="Gate Locked" class="page-sign" />
+}
+else
+{
+    <div class="container">
+        <article>
+            <h3 style="color: red"> @title Chapter Select</h3>
+                        
+            @for(int i = 1; i <= gateNumber; i++)
+            {
+                int ch = i;
+                <button class="btn btn-primary" @onclick=@(() => nav.NavigateTo($@"/gate/{gateNumber}/chapter/{ch}/narrative"))>Chapter @GateUtils.ToRoman(ch)</button>
+                if(i < gateNumber) { <span> | </span> }
+            
+                @*Example Disabled for use later when disabled logic is re-added*@
+                @* <button class="btn btn-primary" @onclick=@GoToChapterThree>Chapter III</button> *@
+            }
+            <br />
+            <br />
+        </article>
+    </div>
+    <br />
+    <p>Gate Difficulty: @difficulty</p>
+    <p>Keys: @gateNumber</p>
+}
+@code {
+    string? apiKey;
+    string? title;
+    [Parameter] public int gateNumber { get; set; }
+
+    HttpClient http = new HttpClient();
+
+    string difficulty = "Unknown";
+
+    int _keyCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        title = $"Gate {GateUtils.ToRoman(gateNumber)}";
+
+        // await GetKeys();
+        // await GetDifficulty();
+    }
+
+    private async Task GetKeys()
+    {
+        Uri uri = new Uri(nav.BaseUri + "api/GetKeys");
+        var response = await http.GetAsync(uri);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var keys = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "No Keys Unlocked." };
+            _keyCount = keys.Count;
+        }
+        StateHasChanged();
+    }
+
+    private async Task GetDifficulty()
+    {
+        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 1);
+
+        Uri difficultyUri = new Uri(nav.BaseUri + "api/GetDifficulty");
+        var response = await http.PostAsJsonAsync(difficultyUri, request);
+
+        GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+
+        difficulty = (response.IsSuccessStatusCode && gateResponse is not null)
+        ? gateResponse.Message ?? "Unknown"
+        : "Failed to load difficulty from Server";
+    }
+}
