@@ -49,8 +49,6 @@ else
 
     string difficulty = "Unknown";
 
-    int _keyCount = 0;
-
     protected override async Task OnInitializedAsync()
     {
         apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
@@ -59,35 +57,5 @@ else
     protected override async Task OnParametersSetAsync()
     {
         title = $"Gate {GateUtils.ToRoman(gateNumber)}";
-
-        // await GetKeys();
-        // await GetDifficulty();
-    }
-
-    private async Task GetKeys()
-    {
-        Uri uri = new Uri(nav.BaseUri + "api/GetKeys");
-        var response = await http.GetAsync(uri);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var keys = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "No Keys Unlocked." };
-            _keyCount = keys.Count;
-        }
-        StateHasChanged();
-    }
-
-    private async Task GetDifficulty()
-    {
-        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: 1);
-
-        Uri difficultyUri = new Uri(nav.BaseUri + "api/GetDifficulty");
-        var response = await http.PostAsJsonAsync(difficultyUri, request);
-
-        GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
-
-        difficulty = (response.IsSuccessStatusCode && gateResponse is not null)
-        ? gateResponse.Message ?? "Unknown"
-        : "Failed to load difficulty from Server";
     }
 }

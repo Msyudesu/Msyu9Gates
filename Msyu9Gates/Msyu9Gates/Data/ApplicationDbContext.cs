@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
-using Msyu9Gates.Data.Models;
+using Msyu9Gates.Data;
+using Msyu9Gates.Lib.Models;
 
 namespace Msyu9Gates.Data
 {
@@ -14,9 +15,9 @@ namespace Msyu9Gates.Data
             _config = config;
         }
 
-        public DbSet<KeyModel> KeysDb { get; set; }
+        public DbSet<IKeyModel> KeysDb { get; set; }
         //public DbSet<GateModel> GatesDb { get; set; }
-        public DbSet<ChapterModel> ChaptersDb { get; set; }
+        public DbSet<IChapterModel> ChaptersDb { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
