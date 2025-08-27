@@ -1,0 +1,494 @@
+﻿{
+  "Gates": {
+    "I": {
+      "GateNumber": 1,
+      "GateOverallDifficultyLevel": 1,
+      "IsCompleted": true,
+      "IsLocked": false,
+      "DateUnlocked": "2025-04-28T12:00:00Z",
+      "DateCompleted": "2025-04-28T12:00:00Z",
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 1,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid":  ""
+        },
+        "II": {
+          "GateId": 1,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 1,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "II": {
+      "GateNumber": 1,
+      "GateOverallDifficultyLevel": 1,
+      "IsCompleted": true,
+      "IsLocked": false,
+      "DateUnlocked": "2025-04-28T12:00:00Z",
+      "DateCompleted": "2025-04-28T12:00:00Z",
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 2,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 2,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 2,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "III": {
+      "GateNumber": 1,
+      "GateOverallDifficultyLevel": 1,
+      "IsCompleted": true,
+      "IsLocked": false,
+      "DateUnlocked": "2025-04-28T12:00:00Z",
+      "DateCompleted": "2025-04-28T12:00:00Z",
+      "Narrative": "",
+      "Conclusion": "Gate3Conclusion.txt",
+      "Chapters": {
+        "I": {
+          "GateId": 3,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "Gate3HomeNarrative.txt",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 3,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "Gate3Chapter2Narrative.txt",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 3,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "Gate3Chapter3Narrative.txt",
+          "RouteGuid": ""
+        },
+        "IV": {
+          "GateId": 3,
+          "ChapterNumber": 4,
+          "DifficultyLevel": 1,
+          "IsCompleted": true,
+          "IsLocked": false,
+          "DateUnlocked": "2025-04-28T12:00:00Z",
+          "DateCompleted": "2025-04-28T12:00:00Z",
+          "Narrative": "Gate3Chapter4Narrative.txt",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "IV": {
+      "GateNumber": 4,
+      "GateOverallDifficultyLevel": 4,
+      "IsCompleted": false,
+      "IsLocked": false,
+      "DateUnlocked": "2025-08-30T00:00:00Z",
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 4,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": "2025-08-30T12:00:00Z",
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 4,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 4,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "V": {
+      "GateNumber": 5,
+      "GateOverallDifficultyLevel": 4,
+      "IsCompleted": false,
+      "IsLocked": true,
+      "DateUnlocked": null,
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 5,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 5,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 5,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "VI": {
+      "GateNumber": 6,
+      "GateOverallDifficultyLevel": 4,
+      "IsCompleted": false,
+      "IsLocked": true,
+      "DateUnlocked": null,
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 6,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 6,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 6,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 5,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "VII": {
+      "GateNumber": 7,
+      "GateOverallDifficultyLevel": 5,
+      "IsCompleted": false,
+      "IsLocked": true,
+      "DateUnlocked": null,
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 7,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 5,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 7,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 7,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 4,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "VIII": {
+      "GateNumber": 8,
+      "GateOverallDifficultyLevel": 5,
+      "IsCompleted": false,
+      "IsLocked": true,
+      "DateUnlocked": null,
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 8,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 5,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 8,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 5,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 8,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 6,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    },
+    "IX": {
+      "GateNumber": 9,
+      "GateOverallDifficultyLevel": 6,
+      "IsCompleted": false,
+      "IsLocked": true,
+      "DateUnlocked": null,
+      "DateCompleted": null,
+      "Narrative": "",
+      "Conclusion": "",
+      "Chapters": {
+        "I": {
+          "GateId": 9,
+          "ChapterNumber": 1,
+          "DifficultyLevel": 5,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "II": {
+          "GateId": 9,
+          "ChapterNumber": 2,
+          "DifficultyLevel": 6,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        },
+        "III": {
+          "GateId": 9,
+          "ChapterNumber": 3,
+          "DifficultyLevel": 6,
+          "IsCompleted": false,
+          "IsLocked": true,
+          "DateUnlocked": null,
+          "DateCompleted": null,
+          "Narrative": "",
+          "RouteGuid": ""
+        }
+      }
+    }
+  },
+  "UnlockableKeys": {
+    "0001": {
+      "GateId": 1,
+      "ChapterId": 1,
+      "KeyNumber": 1,
+      "KeyValue": "PHYREXIANS",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0002": {
+      "GateId": 2,
+      "ChapterId": 1,
+      "KeyNumber": 2,
+      "KeyValue": "ITYALZENHRIIESE",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0003": {
+      "GateId": 2,
+      "ChapterId": 2,
+      "KeyNumber": 3,
+      "KeyValue": "8675309",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0004": {
+      "GateId": 2,
+      "ChapterId": 2,
+      "KeyNumber": 4,
+      "KeyValue": "75260986245481",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0005": {
+      "GateId": 2,
+      "ChapterId": 3,
+      "KeyNumber": 5,
+      "KeyValue": "AHABWENTDOWNWITHHISSHIP",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0006": {
+      "GateId": 2,
+      "ChapterId": 3,
+      "KeyNumber": 6,
+      "KeyValue": "9781454959809",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0007": {
+      "GateId": 3,
+      "ChapterId": 1,
+      "KeyNumber": 7,
+      "KeyValue": "DESCENT",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0008": {
+      "GateId": 3,
+      "ChapterId": 2,
+      "KeyNumber": 8,
+      "KeyValue": "31-30-23-12-27-10-1",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    },
+    "0009": {
+      "GateId": 3,
+      "ChapterId": 4,
+      "KeyNumber": 9,
+      "KeyValue": "6-17-21-31-35-24-5-14-1",
+      "Discovered": true,
+      "DateDiscovered": "2025-08-30T12:00:00Z"
+    }
+  }
+}
