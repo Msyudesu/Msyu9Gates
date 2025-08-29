@@ -45,6 +45,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Msyu9Gates.Lib\Msyu9Gates.Lib\Msyu9Gates.Lib.csproj" />
     <ProjectReference Include="..\Msyu9Gates.Client\Msyu9Gates.Client.csproj" />
+    <PackageReference Include="AspNet.Security.OAuth.Discord" Version="9.4.0" />
     <PackageReference Include="Duende.IdentityServer" Version="7.2.4" />
     <PackageReference Include="log4net" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.20" />

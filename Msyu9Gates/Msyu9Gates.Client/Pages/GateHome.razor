@@ -1,5 +1,6 @@
 ﻿@page "/gate/{gateNumber:int}"
 @rendermode InteractiveAuto
+@attribute [Authorize]
 
 @inject NavigationManager nav
 @inject IJSRuntime js

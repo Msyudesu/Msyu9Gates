@@ -14,7 +14,20 @@
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveAuto" />
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="routeData" DefaultLayout="typeof(Msyu9Gates.Client.Layout.MainLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <LayoutView Layout="typeof(Msyu9Gates.Client.Layout.MainLayout)">
+                    <p>Sorry, nothing found.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+
     <script src="_framework/blazor.web.js"></script>
     <script src="sprites.js"></script>
 </body>
