@@ -26,7 +26,7 @@ public class Program
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         {
             options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
-        });            
+        });
 
         var app = builder.Build();
 
