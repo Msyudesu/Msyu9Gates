@@ -1,28 +1,50 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
-using Msyu9Gates.Data;
 using Msyu9Gates.Lib.Models;
 
-namespace Msyu9Gates.Data
+namespace Msyu9Gates.Data;
+
+public class ApplicationDbContext : DbContext
 {
-    public class ApplicationDbContext : DbContext
+    IConfiguration _config;
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration config)
+        : base(options)
     {
-        IConfiguration _config;
+        _config = config;
+    }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration config)
-            : base(options)
-        {
-            _config = config;
-        }
+    public DbSet<KeyModel> KeysDb => Set<KeyModel>();
+    public DbSet<GateModel> GatesDb => Set<GateModel>();
+    public DbSet<ChapterModel> ChaptersDb => Set<ChapterModel>();
+    public DbSet<UserModel> UsersDb => Set<UserModel>();
+    public DbSet<AttemptModel> AttemptsDb => Set<AttemptModel>();
 
-        public DbSet<IKeyModel> KeysDb { get; set; }
-        public DbSet<IGateModel> GatesDb { get; set; }
-        public DbSet<IChapterModel> ChaptersDb { get; set; }
-        public DbSet<IUserModel> UsersDb { get; set; }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(_config.GetConnectionString("SQLite"));
+    }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite(_config.GetConnectionString("SQLite"));
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GateModel>()
+            .HasIndex(g => g.GateNumber)
+            .IsUnique();
+
+        modelBuilder.Entity<ChapterModel>()
+            .HasIndex(c => new { c.GateId, c.ChapterNumber })
+            .IsUnique();
+
+        modelBuilder.Entity<KeyModel>()
+            .HasIndex(k => new { k.KeyNumber, k.KeyValue})
+            .IsUnique();
+
+        modelBuilder.Entity<UserModel>()
+            .HasIndex(u => u.DiscordId)
+            .IsUnique();
+
+        modelBuilder.Entity<AttemptModel>()
+            .HasIndex(a => new { a.UserId, a.GateId, a.ChapterId });
+
+        base.OnModelCreating(modelBuilder);
     }
 }

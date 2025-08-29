@@ -2,37 +2,36 @@
 using Microsoft.AspNetCore.Components;
 using Msyu9Gates.Lib;
 
-namespace Msyu9Gates.Client
+namespace Msyu9Gates.Client;
+
+public static class Common
 {
-    public static class Common
+    public static async Task<string> GetNarrative(NavigationManager nav, HttpClient http, string apiKey, int gateNumber, int chapter)
     {
-        public static async Task<string> GetNarrative(NavigationManager nav, HttpClient http, string apiKey, int gateNumber, int chapter)
+        GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: chapter);
+
+        Uri uri = new Uri(nav.BaseUri + "api/GetGateNarrative");
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
         {
-            GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: chapter);
+            Content = JsonContent.Create(request)
+        };
+        httpRequest.Headers.Add("X-API-KEY", apiKey);
 
-            Uri uri = new Uri(nav.BaseUri + "api/GetGateNarrative");
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
+        try
+        {
+            var response = await http.SendAsync(httpRequest);
+
+            if (response.IsSuccessStatusCode)
             {
-                Content = JsonContent.Create(request)
-            };
-            httpRequest.Headers.Add("X-API-KEY", apiKey);
-
-            try
-            {
-                var response = await http.SendAsync(httpRequest);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
-                    return gateResponse!.Message ?? "Missing Content";
-                }
-                else
-                    return "Failed to load narrative from Server";
+                GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
+                return gateResponse!.Message ?? "Missing Content";
             }
-            catch
-            {
-                return $"Error request for narrative failed";
-            }
+            else
+                return "Failed to load narrative from Server";
+        }
+        catch
+        {
+            return $"Error request for narrative failed";
         }
     }
 }
