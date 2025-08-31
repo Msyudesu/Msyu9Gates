@@ -30,7 +30,8 @@
             <div class="dropdown-content">
                 <span class="me-2">@user.Identity?.Name</span>
                 <hr />
-                <form method="post" action="/logout" style="display:inline">
+                <form method="post" action="/auth/logout" style="display:inline">
+                    <AntiforgeryToken />
                     <button class="btn btn-link p-0 align-baseline">Logout</button>
                 </form>
             </div>
@@ -38,7 +39,7 @@
         </div>        
     </Authorized>
     <NotAuthorized>
-        <form method="get" action="/login/discord" style="display:inline">
+        <form method="get" action="/auth/login/discord" style="display:inline">
             <button class="btn btn-link p-0 align-baseline">Login</button>
         </form>
     </NotAuthorized>

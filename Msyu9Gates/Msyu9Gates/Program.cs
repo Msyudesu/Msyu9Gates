@@ -35,6 +35,13 @@ public class Program
         });
 
         //Authentication
+        builder.Services.AddOptions<DiscordAuthOptions>()
+            .Bind(builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection))
+            .ValidateDataAnnotations()
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientId), "ClientId required.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientSecret), "ClientSecret required.")
+            .ValidateOnStart();
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -42,16 +49,22 @@ public class Program
         })
         .AddCookie(options =>
         {
-            options.LoginPath = "/login/discord";
-            options.LogoutPath = "/logout";
+            options.LoginPath = "/auth/login/discord";
+            options.LogoutPath = "/auth/logout";
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.Name = ".NineGates.Auth";
             options.ExpireTimeSpan = TimeSpan.FromDays(30);
-            options.SlidingExpiration = true;
+            options.SlidingExpiration = true;            
         })
         .AddDiscord("Discord", options =>
         {
-            options.ClientId = builder.Configuration["Authentication:Discord:ClientId"]!;
-            options.ClientSecret = builder.Configuration["Authentication:Discord:ClientSecret"]!;
-            options.CallbackPath = "/signin-discord";
+            var discordOptions = builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection).Get<DiscordAuthOptions>()!;
+
+            options.ClientId = discordOptions.ClientId!;
+            options.ClientSecret = discordOptions.ClientSecret!;
+            options.CallbackPath = discordOptions.CallbackPath!;
             options.Scope.Clear();
             options.Scope.Add("identify");
             options.SaveTokens = true;
@@ -59,12 +72,12 @@ public class Program
             options.Events.OnCreatingTicket = async context =>
             {
                 string discordId = context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!;
-                string username = context.User.GetProperty("global_name").GetString() 
-                ?? context.User.GetProperty("username").GetString()!
-                ?? string.Empty;
+                string username = context.User.GetProperty("global_name").GetString()
+                    ?? context.User.GetProperty("username").GetString()!
+                    ?? string.Empty;
                 string? avatar = context.User.TryGetProperty("avatar", out var avatarProperty) && avatarProperty.ValueKind != System.Text.Json.JsonValueKind.Null
                     ? avatarProperty.GetString()
-                    : null;
+                    : null;                
 
                 // Save/Update User
                 var scopeFactory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
@@ -93,14 +106,21 @@ public class Program
 
                 ClaimsIdentity identity = (ClaimsIdentity)context?.Principal?.Identity!;
                 identity.AddClaim(new Claim("discord:avatar", avatar ?? string.Empty));
+                
+                if (!identity.HasClaim(c => c.Type == ClaimTypes.Name))
+                    identity.AddClaim(new Claim(ClaimTypes.Name, username));
             };
         });
 
         builder.Services.AddAuthorizationBuilder().AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser());
 
+        builder.Services.AddResponseCompression();        
+
         var app = builder.Build();
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         var environment = app.Environment;
+
+        app.UseResponseCompression();
 
         DbUtils.DatabaseMigrations(app, builder, args, logger);            
 
@@ -131,29 +151,7 @@ public class Program
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
-        app.MapGet("/login/discord", (HttpContext context, string? returnUrl) =>
-        {
-            var properties = new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl ) ? "/" : returnUrl };
-            return Results.Challenge(properties, new[] { "Discord" });
-        });
-
-        app.MapPost("/logout", async(HttpContext context) =>
-        {
-            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            context.Response.Redirect("/");
-        }).RequireAuthorization();
-
-        app.MapGet("/user/me", (ClaimsPrincipal user) =>
-        {
-            if (!user.Identity?.IsAuthenticated ?? true)
-                return Results.Unauthorized();
-            return Results.Ok(new
-            {
-                Id = user.FindFirstValue(ClaimTypes.NameIdentifier),
-                Username = user?.Identity?.Name ?? string.Empty,
-                Avatar = user?.FindFirstValue("discord:avatar") ?? string.Empty
-            });
-        });
+        APIManager.AddAuthenticationAPIs(app);
 
         app.Run();
     }
