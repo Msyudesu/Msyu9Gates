@@ -1,7 +1,7 @@
 ﻿using Msyu9Gates.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Msyu9Gates.Utils;
+namespace Msyu9Gates.Data.Utils;
 
 public static class DbUtils
 {
@@ -37,7 +37,7 @@ public static class DbUtils
         }
 
         // 2. Evaluate policy for destructive recovery.
-        if (!allowAutoRecreate || (env.IsProduction() && !allowAutoRecreateProd))
+        if (!allowAutoRecreate || env.IsProduction() && !allowAutoRecreateProd)
         {
             logger.LogCritical($"Auto recreation is disabled (AllowAutoRecreate={allowAutoRecreate}, Prod={env.IsProduction()}, AllowProd={allowAutoRecreateProd}). Aborting startup.");
             throw new InvalidOperationException("Database migration failed and auto-recreate is disabled.");

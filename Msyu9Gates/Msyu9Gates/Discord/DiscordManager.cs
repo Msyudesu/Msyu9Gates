@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+using System.Security.Claims;
+
 using Msyu9Gates.Data;
 using Msyu9Gates.Lib.Models;
-using System.Security.Claims;
 
 namespace Msyu9Gates.Discord;
 
@@ -10,6 +13,8 @@ public static class DiscordManager
 {
     public static void ConfigureDiscordAuthentication(WebApplicationBuilder builder)
     {
+        var discordOptions = builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection).Get<DiscordAuthOptions>()!;
+
         builder.Services.AddOptions<DiscordAuthOptions>()
             .Bind(builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection))
             .ValidateDataAnnotations()
@@ -24,8 +29,8 @@ public static class DiscordManager
         })
         .AddCookie(options =>
         {
-            options.LoginPath = "/auth/login/discord";
-            options.LogoutPath = "/auth/logout";
+            options.LoginPath = discordOptions.LoginPath;
+            options.LogoutPath = discordOptions.LogoutPath;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Lax;
@@ -35,8 +40,6 @@ public static class DiscordManager
         })
         .AddDiscord("Discord", options =>
         {
-            var discordOptions = builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection).Get<DiscordAuthOptions>()!;
-
             options.ClientId = discordOptions.ClientId!;
             options.ClientSecret = discordOptions.ClientSecret!;
             options.CallbackPath = discordOptions.CallbackPath!;

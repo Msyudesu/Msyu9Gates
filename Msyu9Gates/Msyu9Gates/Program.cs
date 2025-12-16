@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authentication;
 using AspNet.Security.OAuth.Discord;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
-using Msyu9Gates.Utils;
 using Msyu9Gates.Lib.Models;
 using Msyu9Gates.Discord;
+using Msyu9Gates.Data.Utils;
 
 namespace Msyu9Gates;
 
@@ -36,13 +37,14 @@ public class Program
         });
 
         //Authentication
-        DiscordManager.ConfigureDiscordAuthentication(builder);
+        DiscordManager.ConfigureDiscordAuthentication(builder);        
 
         builder.Services.AddAuthorizationBuilder().AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser());
 
         builder.Services.AddResponseCompression();
 
         var app = builder.Build();
+        var discorderAuthOptions = app.Services.GetRequiredService<IOptions<DiscordAuthOptions>>().Value;
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         var environment = app.Environment;
 

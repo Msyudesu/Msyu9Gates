@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Protocol;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 
 namespace Msyu9Gates.Discord
@@ -9,5 +10,7 @@ namespace Msyu9Gates.Discord
         [Required] public string? ClientId { get; set; } = string.Empty;
         [Required] public string? ClientSecret { get; set; } = string.Empty;
         public string? CallbackPath { get; set; } = "/signin-discord";
+        public string? LoginPath { get; set; } = "/auth/login/discord";
+        public string? LogoutPath { get; set; } = "/auth/logout";
     }
 }
