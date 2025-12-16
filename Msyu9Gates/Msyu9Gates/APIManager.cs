@@ -32,5 +32,15 @@ namespace Msyu9Gates
                 });
             });
         }
+
+        private static bool APIKeyIsValid(HttpContext context, IConfiguration config)
+        {
+            if (context.Request.Headers.TryGetValue("X-API-Key", out var apiKey))
+            {
+                string? validApiKey = config.GetValue<string>("ClientUnsecuredApiKey");
+                return !string.IsNullOrEmpty(validApiKey) && apiKey == validApiKey;
+            }
+            return false;
+        }
     }
 }

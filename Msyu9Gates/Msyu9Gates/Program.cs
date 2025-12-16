@@ -9,6 +9,7 @@ using Msyu9Gates.Components;
 using Msyu9Gates.Data;
 using Msyu9Gates.Utils;
 using Msyu9Gates.Lib.Models;
+using Msyu9Gates.Discord;
 
 namespace Msyu9Gates;
 
@@ -35,86 +36,11 @@ public class Program
         });
 
         //Authentication
-        builder.Services.AddOptions<DiscordAuthOptions>()
-            .Bind(builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection))
-            .ValidateDataAnnotations()
-            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientId), "ClientId required.")
-            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientSecret), "ClientSecret required.")
-            .ValidateOnStart();
-
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = "Discord";
-        })
-        .AddCookie(options =>
-        {
-            options.LoginPath = "/auth/login/discord";
-            options.LogoutPath = "/auth/logout";
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SameSite = SameSiteMode.Lax;
-            options.Cookie.Name = ".NineGates.Auth";
-            options.ExpireTimeSpan = TimeSpan.FromDays(30);
-            options.SlidingExpiration = true;            
-        })
-        .AddDiscord("Discord", options =>
-        {
-            var discordOptions = builder.Configuration.GetSection(DiscordAuthOptions.ConfigSection).Get<DiscordAuthOptions>()!;
-
-            options.ClientId = discordOptions.ClientId!;
-            options.ClientSecret = discordOptions.ClientSecret!;
-            options.CallbackPath = discordOptions.CallbackPath!;
-            options.Scope.Clear();
-            options.Scope.Add("identify");
-            options.SaveTokens = true;
-
-            options.Events.OnCreatingTicket = async context =>
-            {
-                string discordId = context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!;
-                string username = context.User.GetProperty("global_name").GetString()
-                    ?? context.User.GetProperty("username").GetString()!
-                    ?? string.Empty;
-                string? avatar = context.User.TryGetProperty("avatar", out var avatarProperty) && avatarProperty.ValueKind != System.Text.Json.JsonValueKind.Null
-                    ? avatarProperty.GetString()
-                    : null;                
-
-                // Save/Update User
-                var scopeFactory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-                await using var dbContext = await scopeFactory.CreateDbContextAsync();
-
-                var existing = await dbContext.UsersDb.FirstOrDefaultAsync(u => u.DiscordId == discordId);
-                if (existing is null)
-                {
-                    dbContext.UsersDb.Add(new UserModel
-                    {
-                        DiscordId = discordId,
-                        Username = username,
-                        Avatar = avatar,
-                        CreatedDateUtc = DateTimeOffset.UtcNow,
-                        LastLoginUtc = DateTimeOffset.UtcNow,
-                        IsActive = true
-                    });
-                }
-                else
-                {
-                    existing.Username = username;
-                    existing.Avatar = avatar;
-                    existing.LastLoginUtc = DateTimeOffset.UtcNow;
-                }
-                await dbContext.SaveChangesAsync();
-
-                ClaimsIdentity identity = (ClaimsIdentity)context?.Principal?.Identity!;
-                identity.AddClaim(new Claim("discord:avatar", avatar ?? string.Empty));
-                
-                if (!identity.HasClaim(c => c.Type == ClaimTypes.Name))
-                    identity.AddClaim(new Claim(ClaimTypes.Name, username));
-            };
-        });
+        DiscordManager.ConfigureDiscordAuthentication(builder);
 
         builder.Services.AddAuthorizationBuilder().AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser());
 
-        builder.Services.AddResponseCompression();        
+        builder.Services.AddResponseCompression();
 
         var app = builder.Build();
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
@@ -122,7 +48,8 @@ public class Program
 
         app.UseResponseCompression();
 
-        DbUtils.DatabaseMigrations(app, builder, args, logger);            
+        DbUtils.DatabaseMigrations(app, builder, args, logger);
+        //DbUtils.ApplyMigrationsAsync(app, CancellationToken.None).GetAwaiter().GetResult();
 
         logger.LogInformation($"Application Started: Running in {environment}");
 
@@ -134,7 +61,7 @@ public class Program
         else
         {
             app.UseExceptionHandler("/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts
             app.UseHsts();
         }
 
@@ -155,14 +82,4 @@ public class Program
 
         app.Run();
     }
-
-    private static bool APIKeyIsValid(HttpContext context, IConfiguration config)
-    {
-        if (context.Request.Headers.TryGetValue("X-API-Key", out var apiKey))
-        {
-            string? validApiKey = config.GetValue<string>("ClientUnsecuredApiKey");
-            return !string.IsNullOrEmpty(validApiKey) && apiKey == validApiKey;
-        }
-        return false;
-    }    
 }

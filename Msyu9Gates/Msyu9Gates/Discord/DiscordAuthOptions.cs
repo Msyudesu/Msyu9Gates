@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Protocol;
 using System.ComponentModel.DataAnnotations;
 
-namespace Msyu9Gates
+namespace Msyu9Gates.Discord
 {
     public sealed class DiscordAuthOptions
     {

@@ -59,7 +59,7 @@ public static class DbUtils
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to backup database before recreation. Aborting to avoid data loss.");
+                logger.LogError($"Failed to backup database before recreation. Aborting to avoid data loss. Exception: {ex}");
                 throw;
             }
         }
@@ -177,6 +177,7 @@ public static class DbUtils
     /// <param name="builder"></param>
     /// <param name="args"></param>
     /// <param name="logger"></param>
+    [Obsolete("Use ApplyMigrationsAsync instead.")]
     public static void DatabaseMigrations(WebApplication app, WebApplicationBuilder builder, string[] args, ILogger logger)
     {
         try
