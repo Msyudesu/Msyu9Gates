@@ -19,7 +19,17 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "",
-          "RouteGuid":  ""
+          "RouteGuid": "",
+          "Keys": {
+            "0001": {
+              "GateId": 1,
+              "ChapterId": 1,
+              "KeyNumber": 1,
+              "KeyValue": "PHYREXIANS",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         },
         "II": {
           "GateId": 1,
@@ -64,7 +74,17 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0002": {
+              "GateId": 2,
+              "ChapterId": 1,
+              "KeyNumber": 2,
+              "KeyValue": "ITYALZENHRIIESE",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         },
         "II": {
           "GateId": 2,
@@ -75,7 +95,25 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0003": {
+              "GateId": 2,
+              "ChapterId": 2,
+              "KeyNumber": 3,
+              "KeyValue": "8675309",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            },
+            "0004": {
+              "GateId": 2,
+              "ChapterId": 2,
+              "KeyNumber": 4,
+              "KeyValue": "75260986245481",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         },
         "III": {
           "GateId": 2,
@@ -86,7 +124,25 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0005": {
+              "GateId": 2,
+              "ChapterId": 3,
+              "KeyNumber": 5,
+              "KeyValue": "AHABWENTDOWNWITHHISSHIP",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            },
+            "0006": {
+              "GateId": 2,
+              "ChapterId": 3,
+              "KeyNumber": 6,
+              "KeyValue": "9781454959809",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         }
       }
     },
@@ -109,7 +165,17 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "Gate3HomeNarrative.txt",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0007": {
+              "GateId": 3,
+              "ChapterId": 1,
+              "KeyNumber": 7,
+              "KeyValue": "DESCENT",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         },
         "II": {
           "GateId": 3,
@@ -120,7 +186,17 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "Gate3Chapter2Narrative.txt",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0008": {
+              "GateId": 3,
+              "ChapterId": 2,
+              "KeyNumber": 8,
+              "KeyValue": "31-30-23-12-27-10-1",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         },
         "III": {
           "GateId": 3,
@@ -142,7 +218,17 @@
           "DateUnlocked": "2025-04-28T12:00:00Z",
           "DateCompleted": "2025-04-28T12:00:00Z",
           "Narrative": "Gate3Chapter4Narrative.txt",
-          "RouteGuid": ""
+          "RouteGuid": "",
+          "Keys": {
+            "0009": {
+              "GateId": 3,
+              "ChapterId": 4,
+              "KeyNumber": 9,
+              "KeyValue": "6-17-21-31-35-24-5-14-1",
+              "Discovered": true,
+              "DateDiscovered": "2025-08-30T12:00:00Z"
+            }
+          }
         }
       }
     },
@@ -415,80 +501,6 @@
           "RouteGuid": ""
         }
       }
-    }
-  },
-  "UnlockableKeys": {
-    "0001": {
-      "GateId": 1,
-      "ChapterId": 1,
-      "KeyNumber": 1,
-      "KeyValue": "PHYREXIANS",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0002": {
-      "GateId": 2,
-      "ChapterId": 1,
-      "KeyNumber": 2,
-      "KeyValue": "ITYALZENHRIIESE",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0003": {
-      "GateId": 2,
-      "ChapterId": 2,
-      "KeyNumber": 3,
-      "KeyValue": "8675309",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0004": {
-      "GateId": 2,
-      "ChapterId": 2,
-      "KeyNumber": 4,
-      "KeyValue": "75260986245481",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0005": {
-      "GateId": 2,
-      "ChapterId": 3,
-      "KeyNumber": 5,
-      "KeyValue": "AHABWENTDOWNWITHHISSHIP",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0006": {
-      "GateId": 2,
-      "ChapterId": 3,
-      "KeyNumber": 6,
-      "KeyValue": "9781454959809",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0007": {
-      "GateId": 3,
-      "ChapterId": 1,
-      "KeyNumber": 7,
-      "KeyValue": "DESCENT",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0008": {
-      "GateId": 3,
-      "ChapterId": 2,
-      "KeyNumber": 8,
-      "KeyValue": "31-30-23-12-27-10-1",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
-    },
-    "0009": {
-      "GateId": 3,
-      "ChapterId": 4,
-      "KeyNumber": 9,
-      "KeyValue": "6-17-21-31-35-24-5-14-1",
-      "Discovered": true,
-      "DateDiscovered": "2025-08-30T12:00:00Z"
     }
   }
 }

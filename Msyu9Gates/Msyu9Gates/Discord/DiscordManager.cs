@@ -55,7 +55,7 @@ public static class DiscordManager
                     ?? string.Empty;
                 string? avatar = context.User.TryGetProperty("avatar", out var avatarProperty) && avatarProperty.ValueKind != System.Text.Json.JsonValueKind.Null
                     ? avatarProperty.GetString()
-                    : null;
+                    : null;                
 
                 // Save/Update User
                 var scopeFactory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
@@ -87,6 +87,14 @@ public static class DiscordManager
 
                 if (!identity.HasClaim(c => c.Type == ClaimTypes.Name))
                     identity.AddClaim(new Claim(ClaimTypes.Name, username));
+
+                var optionsSnapshot = context?.HttpContext.RequestServices.GetRequiredService<IOptionsSnapshot<DiscordAuthOptions>>();
+                string? ownerId = optionsSnapshot?.Value.OwnerId;
+
+                if (!string.IsNullOrWhiteSpace(ownerId) && discordId == ownerId)
+                {
+                    identity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
+                }
             };
         });
     }

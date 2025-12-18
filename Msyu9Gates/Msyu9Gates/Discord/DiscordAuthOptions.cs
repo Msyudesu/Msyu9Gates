@@ -6,6 +6,7 @@ namespace Msyu9Gates.Discord
 {
     public sealed class DiscordAuthOptions
     {
+        public string? OwnerId { get; set; } = string.Empty;
         public const string ConfigSection = "Authentication:Discord";
         [Required] public string? ClientId { get; set; } = string.Empty;
         [Required] public string? ClientSecret { get; set; } = string.Empty;

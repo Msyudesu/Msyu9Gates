@@ -11,6 +11,7 @@ using Msyu9Gates.Data;
 using Msyu9Gates.Lib.Models;
 using Msyu9Gates.Discord;
 using Msyu9Gates.Data.Utils;
+using Msyu9Gates.API;
 
 namespace Msyu9Gates;
 
@@ -36,10 +37,12 @@ public class Program
             options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
         });
 
-        //Authentication
-        DiscordManager.ConfigureDiscordAuthentication(builder);        
+        //Authentication        
+        DiscordManager.ConfigureDiscordAuthentication(builder);
 
-        builder.Services.AddAuthorizationBuilder().AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser());
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser())
+            .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
 
         builder.Services.AddResponseCompression();
 
@@ -50,8 +53,7 @@ public class Program
 
         app.UseResponseCompression();
 
-        DbUtils.DatabaseMigrations(app, builder, args, logger);
-        //DbUtils.ApplyMigrationsAsync(app, CancellationToken.None).GetAwaiter().GetResult();
+        DbUtils.ApplyMigrationsAsync(app, CancellationToken.None).GetAwaiter().GetResult();
 
         logger.LogInformation($"Application Started: Running in {environment}");
 
