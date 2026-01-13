@@ -76,7 +76,7 @@ public static class APIManager
             var chapter = await ChapterDbUtils.GetChapterAsync(db, gateId, chapterNumber, ct);
             return chapter is null ? Results.NotFound() : Results.Ok(chapter);
         });
-        app.MapPost("/api/chapters/save", async (ChapterDto chapterDto, ApplicationDbContext db, CancellationToken ct) =>
+        app.MapPut("/api/chapters/save", async (ChapterDto chapterDto, ApplicationDbContext db, CancellationToken ct) =>
         {
             return Results.Ok(await ChapterDbUtils.SaveChapterAsync(db, chapterDto, ct));
         }).RequireAuthorization("Admin");
@@ -84,6 +84,36 @@ public static class APIManager
 
     public static void AddKeyAPIs(WebApplication app)
     {
-        // Key APIs can be added here
+        app.MapGet("/api/keys/all", async (ApplicationDbContext db, CancellationToken ct) =>
+        {
+            return Results.Ok(await KeyDbUtils.GetAllKeysAsync(db, ct));
+        }).RequireAuthorization("Admin");
+
+        app.MapGet("/api/keys/gate/{gateId:int}", async (int gateId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            return Results.Ok(await KeyDbUtils.GetKeysByGateIdAsync(db, gateId, ct));
+        }).RequireAuthorization("Admin");
+
+        app.MapGet("/api/keys/gate/{gateId:int}/chapter/{chapterId:int}", async (int gateId, int chapterId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var key = await KeyDbUtils.GetKeyByGateChapterAsync(db, gateId, chapterId, ct);
+            return key is null ? Results.NotFound() : Results.Ok(key);
+        }).RequireAuthorization("Admin");
+
+        app.MapGet("/api/keys/unlocked", async (ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var key = await KeyDbUtils.GetUnlockedKeys(db, ct);
+            return key is null ? Results.NotFound() : Results.Ok(key);
+        });
+
+        app.MapPut("/api/keys/save", async (KeyDto keyDto, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            return Results.Ok(await KeyDbUtils.SaveKeyAsync(db, keyDto, ct));
+        }).RequireAuthorization("Admin");
+    }
+
+    public static void AddAttemptAPIs(WebApplication app)
+    {
+        // Attempt APIs can be added here
     }
 }
