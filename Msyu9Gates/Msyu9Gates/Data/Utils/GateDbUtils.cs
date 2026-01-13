@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using Msyu9Gates.Contracts;
-using Msyu9Gates.Data;
 using Msyu9Gates.Lib.Models;
 
 namespace Msyu9Gates.Data.Utils;
@@ -22,7 +21,7 @@ public static class GateDbUtils
 
     public static async Task<GateDto> SaveGateAsync(ApplicationDbContext db, GateDto gateDto, CancellationToken ct)
     {
-        var gateModel = await db.GatesDb.Where(g => g.Id == gateDto.Id).FirstOrDefaultAsync(ct);
+        var gateModel = await db.GatesDb.Where(g => g.GateNumber == gateDto.GateNumber).FirstOrDefaultAsync(ct);
         if (gateModel is null)
         {
             gateModel = new GateModel();

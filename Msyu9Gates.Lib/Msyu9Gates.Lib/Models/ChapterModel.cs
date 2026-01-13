@@ -7,7 +7,7 @@ public class ChapterModel
     [Key] public int Id { get; set; }
     public int GateId { get; set; }
     public int ChapterNumber { get; set; }
-    public int DiffiutyLevel { get; set; }
+    public int DifficultyLevel { get; set; }
     public bool IsCompleted { get; set; } = false;
     public bool IsLocked { get; set; } = true;
     public DateTimeOffset? DateUnlockedUtc { get; set; } = null;
