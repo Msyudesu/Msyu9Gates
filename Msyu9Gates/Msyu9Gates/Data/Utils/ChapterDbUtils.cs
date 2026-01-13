@@ -32,7 +32,7 @@ public static class ChapterDbUtils
         {
             chapterModel = new ChapterModel();
             chapterModel.ToModel(chapterDto);
-            db.ChaptersDb.Add(chapterModel);
+            await db.ChaptersDb.AddAsync(chapterModel, ct);
         }
         else
         {

@@ -26,7 +26,7 @@ public static class GateDbUtils
         {
             gateModel = new GateModel();
             gateModel.ApplyFromDto(gateDto);
-            db.GatesDb.Add(gateModel);
+            await db.GatesDb.AddAsync(gateModel, ct);
         }
         else
         {

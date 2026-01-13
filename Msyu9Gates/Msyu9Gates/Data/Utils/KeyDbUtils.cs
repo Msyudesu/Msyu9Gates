@@ -38,7 +38,7 @@ public static class KeyDbUtils
         {
             keyModel = new KeyModel();
             keyModel.ApplyFromDto(keyDto);
-            db.KeysDb.Add(keyModel);
+            await db.KeysDb.AddAsync(keyModel, ct);
         }
         else
         {
