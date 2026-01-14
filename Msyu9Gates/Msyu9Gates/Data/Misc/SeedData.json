@@ -56,7 +56,7 @@
       }
     },
     "II": {
-      "GateNumber": 1,
+      "GateNumber": 2,
       "GateOverallDifficultyLevel": 1,
       "IsCompleted": true,
       "IsLocked": false,
@@ -147,7 +147,7 @@
       }
     },
     "III": {
-      "GateNumber": 1,
+      "GateNumber": 3,
       "GateOverallDifficultyLevel": 1,
       "IsCompleted": true,
       "IsLocked": false,

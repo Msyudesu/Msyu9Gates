@@ -1,5 +1,6 @@
 ﻿using Msyu9Gates.Data;
 using Microsoft.EntityFrameworkCore;
+using Duende.IdentityServer.Validation;
 
 namespace Msyu9Gates.Data.Utils;
 
@@ -29,6 +30,8 @@ public static class DbUtils
         try
         {
             await MigrateAsync(app, logger, cancellationToken);
+            // Attempt Seed, will check if data exists and fail safely if so.
+            await SeedAsync(app, logger, cancellationToken);
             return;
         }
         catch (Exception ex)
@@ -94,6 +97,7 @@ public static class DbUtils
 
             if (seedOnCreate)
             {
+                logger.LogInformation("Seeding database after recreation as configured.");
                 await SeedAsync(app, logger, cancellationToken);
             }
 
@@ -133,16 +137,18 @@ public static class DbUtils
     {
         await using var scope = app.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 
-        // Example idempotent seed (pseudo – replace with real):
-        // if (!await db.Gates.AnyAsync(ct))
-        // {
-        //     db.Gates.Add(new Gate { GateNumber = 1, Name = "Gate I", IsLocked = false });
-        //     await db.SaveChangesAsync(ct);
-        //     logger.LogInformation("Seeded initial gate data.");
-        // }
+        try
+        {
+            await JSONDataSeeder.SeedFromJsonAsync(db, env, logger, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred during database seeding.");
+        }
 
-        logger.LogDebug("Seed step complete (no seed logic implemented yet).");
+        logger.LogInformation("Seed step complete.");
     }
 
     private static bool IsFileLocked(string path)

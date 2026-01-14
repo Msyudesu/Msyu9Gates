@@ -14,6 +14,25 @@ public static class AttemptsDbUtils
             .CountAsync(ct);
     }
 
+    public static async Task<List<AttemptDto>> GetAttemptsByPlayerForChapterAsync(ApplicationDbContext db, int userId, int chapterId, CancellationToken ct)
+    {
+        var attempts = await db.AttemptsDb.AsNoTracking()
+            .Where(a => a.UserId == userId && a.ChapterId == chapterId)
+            .ToListAsync(ct);
+        return attempts.Select(a => a.ToDto()).ToList();
+    }
+
+    public static async Task<List<AttemptDto>> GetAttemptsForChapterAsync(ApplicationDbContext db, int chapterId, CancellationToken ct)
+    {
+        var attempts = await db.AttemptsDb.AsNoTracking()
+            .Where(a => a.ChapterId == chapterId)
+            .OrderByDescending(a => a.Id)
+            .Take(25)
+            .ToListAsync(ct);
+
+        return attempts.Select(a => a.ToDto()).ToList();
+    }
+
     public static async Task<AttemptDto> SaveAttemptAsync(ApplicationDbContext db, AttemptDto attemptDto, CancellationToken ct)
     {
         var attemptModel = new AttemptModel();

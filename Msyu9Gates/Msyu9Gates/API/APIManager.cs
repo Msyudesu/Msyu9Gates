@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace Msyu9Gates.API;
 
 public static class APIManager
-{
+{    
     public static void AddAuthenticationAPIs(WebApplication app)
     {
         app.MapGet("/auth/login/discord", (HttpContext context, string? returnUrl) =>
@@ -114,6 +114,32 @@ public static class APIManager
 
     public static void AddAttemptAPIs(WebApplication app)
     {
-        // Attempt APIs can be added here
+        app.MapGet("/api/attempts/{chapterId:int}/{userId:int}/total", async (int chapterId, int userId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var attempts = await AttemptsDbUtils.GetTotalAttemptsByPlayerForChapterAsync(db, userId, chapterId, ct);
+            return Results.Ok(new { TotalAttempts = attempts });
+        });
+
+        app.MapGet("/api/attempts/{chapterId:int}/{userId:int}", async (int chapterId, int userId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var attempts = await AttemptsDbUtils.GetAttemptsByPlayerForChapterAsync(db, userId, chapterId, ct);
+            return Results.Ok(attempts);
+        });
+
+        app.MapGet("/api/attempts/{chapterId:int}", async (int chapterId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var attempts = await AttemptsDbUtils.GetAttemptsForChapterAsync(db, chapterId, ct);
+            return Results.Ok(attempts);
+        }).RequireAuthorization("Admin");
+
+    }
+
+    public static void AddAPIs(WebApplication app)
+    {
+        AddAuthenticationAPIs(app);
+        AddGateAPIs(app);
+        AddChapterAPIs(app);
+        AddKeyAPIs(app);
+        AddAttemptAPIs(app);
     }
 }

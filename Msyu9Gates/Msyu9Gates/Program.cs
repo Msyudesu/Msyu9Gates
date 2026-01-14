@@ -82,7 +82,7 @@ public class Program
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
-        APIManager.AddAuthenticationAPIs(app);
+        APIManager.AddAPIs(app);
 
         app.Run();
     }
