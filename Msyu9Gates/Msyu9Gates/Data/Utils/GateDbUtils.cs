@@ -19,12 +19,18 @@ public static class GateDbUtils
         return gate?.ToDto();
     }
 
+    public static async Task<string> GetGateNarrativeAsync(ApplicationDbContext db, int gateNumber, CancellationToken ct)
+    {
+        var gate = await db.GatesDb.AsNoTracking().Where(g => g.GateNumber == gateNumber).FirstOrDefaultAsync(ct);
+        return gate?.Narrative ?? string.Empty;
+    }
+
     public static async Task<GateDto> SaveGateAsync(ApplicationDbContext db, GateDto gateDto, CancellationToken ct)
     {
         var gateModel = await db.GatesDb.Where(g => g.GateNumber == gateDto.GateNumber).FirstOrDefaultAsync(ct);
         if (gateModel is null)
         {
-            gateModel = new GateModel();
+            gateModel = new Gate();
             gateModel.ApplyFromDto(gateDto);
             await db.GatesDb.AddAsync(gateModel, ct);
         }

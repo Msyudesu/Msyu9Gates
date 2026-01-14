@@ -67,14 +67,14 @@ public static class JSONDataSeeder
         }
 
         // 2. Flatten gates/chapters/keys from the nested dictionary structure
-        var gatesToInsert = new List<GateModel>();
-        var chaptersToInsert = new List<ChapterModel>();
-        var keysToInsert = new List<KeyModel>();
+        var gatesToInsert = new List<Gate>();
+        var chaptersToInsert = new List<Chapter>();
+        var keysToInsert = new List<GateKey>();
 
         foreach ((string gateKey, GateSeed gateSeed) in root.Gates)
         {
             // Create GateModel
-            var gateModel = new GateModel
+            var gateModel = new Gate
             {
                 GateNumber = gateSeed.GateNumber,
                 GateOverallDifficultyLevel = gateSeed.GateOverallDifficultyLevel,
@@ -94,7 +94,7 @@ public static class JSONDataSeeder
 
             foreach ((string chapterKey, ChapterSeed chapterSeed) in gateSeed.Chapters)
             {
-                var chapterModel = new ChapterModel
+                var chapterModel = new Chapter
                 {
                     GateId = chapterSeed.GateId,
                     ChapterNumber = chapterSeed.ChapterNumber,
@@ -115,7 +115,7 @@ public static class JSONDataSeeder
 
                 foreach ((string keyId, KeySeed keySeed) in chapterSeed.Keys)
                 {
-                    var keyModel = new KeyModel
+                    var keyModel = new GateKey
                     {
                         GateId = keySeed.GateId,
                         ChapterId = keySeed.ChapterId,

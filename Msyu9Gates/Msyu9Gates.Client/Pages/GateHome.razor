@@ -40,10 +40,19 @@ else
     <br />
     <p>Gate Difficulty: @difficulty</p>
     <p>Keys: @gateNumber</p>
+
+    @foreach (var (line, idx) in articleBody.Split('\n').Select((l, i) => (l, i)))
+    {
+        <div class="narrative-line" style="animation-delay:@($"{idx * 1.5:F1}s")">
+            @line
+        </div>
+        <br />
+    }
 }
 @code {
-    string? apiKey;
+    string articleBody = string.Empty;
     string? title;
+
     [Parameter] public int gateNumber { get; set; }
 
     HttpClient http = new HttpClient();
@@ -52,11 +61,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
+        
     }
 
     protected override async Task OnParametersSetAsync()
     {
         title = $"Gate {Utils.ToRoman(gateNumber)}";
+
+        articleBody = await Common.GetNarrative(nav, http, gateNumber);
     }
 }

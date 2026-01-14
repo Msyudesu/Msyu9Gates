@@ -35,7 +35,7 @@ public static class AttemptsDbUtils
 
     public static async Task<AttemptDto> SaveAttemptAsync(ApplicationDbContext db, AttemptDto attemptDto, CancellationToken ct)
     {
-        var attemptModel = new AttemptModel();
+        var attemptModel = new Attempt();
         attemptModel.ApplyFromDto(attemptDto);
         await db.AttemptsDb.AddAsync(attemptModel, ct);
         await db.SaveChangesAsync(ct);

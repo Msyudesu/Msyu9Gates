@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Security.Claims;
+
 using Msyu9Gates.Contracts;
 using Msyu9Gates.Data;
 using Msyu9Gates.Data.Utils;
-using System.Collections.Generic;
-using System.Security.Claims;
+using Msyu9Gates.Lib;
+using Msyu9Gates.Lib.Models;
 
 namespace Msyu9Gates.API;
 
@@ -53,6 +57,12 @@ public static class APIManager
             return gate is null ? Results.NotFound() : Results.Ok(gate);
         });
 
+        app.MapGet("/api/gates/{gateNumber:int}/narrative", async (int gateNumber, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var narrative = await GateDbUtils.GetGateNarrativeAsync(db, gateNumber, ct);
+            return Results.Ok(new { Narrative = await ReadNarrativeFromFileAsync(narrative) });
+        });
+
         app.MapPut("/api/gates/save/{gateNumber:int}", async (int gateNumber, GateDto gateDto, ApplicationDbContext db, CancellationToken ct) =>
         {
             return Results.Ok(await GateDbUtils.SaveGateAsync(db, gateDto, ct));
@@ -76,9 +86,27 @@ public static class APIManager
             var chapter = await ChapterDbUtils.GetChapterAsync(db, gateId, chapterNumber, ct);
             return chapter is null ? Results.NotFound() : Results.Ok(chapter);
         });
-        app.MapPut("/api/chapters/save", async (ChapterDto chapterDto, ApplicationDbContext db, CancellationToken ct) =>
+
+        app.MapPost("/api/chapters/{gateId:int}/{chapterNumber:int}/narrative", async (ApplicationDbContext db, CancellationToken ct, [FromBody] GateRequest request) =>
         {
-            return Results.Ok(await ChapterDbUtils.SaveChapterAsync(db, chapterDto, ct));
+            var narrative = await ChapterDbUtils.GetChapterNarrativeAsync(db, request.Gate, request.Chapter, ct);
+            string? narrativeText = await ReadNarrativeFromFileAsync(narrative);
+
+            if (!String.IsNullOrEmpty(narrativeText))
+            {
+                GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: narrativeText);
+                return Results.Ok(response);
+            }
+            else 
+            {
+                GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: "Request successful, but failed to retrieve narrative text from file.");
+                return Results.Problem($"Failed to retrieve narrative text for Gate {request.Gate} Chapter {request.Chapter}");
+            }
+        });
+
+        app.MapPut("/api/chapters/save", async (Chapter chapter, ApplicationDbContext db, CancellationToken ct) =>
+        {            
+            return Results.Ok(await ChapterDbUtils.SaveChapterAsync(db, chapter.ToDto(), ct));
         }).RequireAuthorization("Admin");
     }
 
@@ -132,6 +160,17 @@ public static class APIManager
             return Results.Ok(attempts);
         }).RequireAuthorization("Admin");
 
+    }
+
+    private static async Task<string?> ReadNarrativeFromFileAsync(string narrative)
+    {
+        const string NARRATIVE_FOLDER = "Data/Misc/";
+        string narrativePath = Path.Combine(NARRATIVE_FOLDER, narrative ?? string.Empty);
+
+        if (!File.Exists(narrativePath) || String.IsNullOrEmpty(narrativePath))
+            return String.Empty;
+
+        return await File.ReadAllTextAsync(narrativePath);
     }
 
     public static void AddAPIs(WebApplication app)

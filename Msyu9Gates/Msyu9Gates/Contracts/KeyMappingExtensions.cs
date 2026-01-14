@@ -2,7 +2,7 @@
 
 public static class KeyMappingExtensions
 {
-    public static KeyDto ToDto(this Lib.Models.KeyModel keyModel) =>
+    public static KeyDto ToDto(this Lib.Models.GateKey keyModel) =>
         new KeyDto(
             keyModel.Id,
             keyModel.GateId,
@@ -12,7 +12,7 @@ public static class KeyMappingExtensions
             keyModel.Discovered,
             keyModel.DateDiscoveredUtc
         );
-    public static void ApplyFromDto(this Lib.Models.KeyModel keyModel, KeyDto keyDto)
+    public static void ApplyFromDto(this Lib.Models.GateKey keyModel, KeyDto keyDto)
     {
         keyModel.GateId = keyDto.GateId;
         keyModel.ChapterId = keyDto.ChapterId;

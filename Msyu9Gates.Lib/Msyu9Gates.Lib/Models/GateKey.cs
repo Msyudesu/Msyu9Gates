@@ -2,7 +2,7 @@
 
 namespace Msyu9Gates.Lib.Models;
 
-public class KeyModel
+public class GateKey
 {
     [Key] public int Id { get; set; }
     public int GateId { get; set; }

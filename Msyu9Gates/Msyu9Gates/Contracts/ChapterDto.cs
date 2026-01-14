@@ -4,7 +4,7 @@ public sealed record ChapterDto(
     int Id,
     int GateId,
     int ChapterNumber,
-    int DiffiutyLevel,
+    int DifficultyLevel,
     bool IsCompleted,
     bool IsLocked,
     DateTimeOffset? DateUnlockedUtc,

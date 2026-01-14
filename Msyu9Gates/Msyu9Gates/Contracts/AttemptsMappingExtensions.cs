@@ -4,7 +4,7 @@ namespace Msyu9Gates.Contracts;
 
 public static class AttemptsMappingExtensions
 {
-    public static AttemptDto ToDto(this AttemptModel attempt) => 
+    public static AttemptDto ToDto(this Attempt attempt) => 
         new AttemptDto(
             AttemptedAtUtc: DateTimeOffset.UtcNow,
             UserId: attempt.UserId,
@@ -14,7 +14,7 @@ public static class AttemptsMappingExtensions
         );
     
 
-    public static void ApplyFromDto(this AttemptModel attempt, AttemptDto dto)
+    public static void ApplyFromDto(this Attempt attempt, AttemptDto dto)
     {
         attempt.AttemptedAtUtc = dto.AttemptedAtUtc;
         attempt.UserId = dto.UserId;

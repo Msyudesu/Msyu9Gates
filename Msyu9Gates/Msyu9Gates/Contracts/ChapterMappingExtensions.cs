@@ -4,13 +4,13 @@ namespace Msyu9Gates.Contracts;
 
 public static class ChapterMappingExtensions
 {
-    public static ChapterDto ToDto(this ChapterModel model)
+    public static ChapterDto ToDto(this Chapter model)
     {
         return new ChapterDto(
             Id: model.Id,
             GateId: model.GateId,
             ChapterNumber: model.ChapterNumber,
-            DiffiutyLevel: model.DifficultyLevel,
+            DifficultyLevel: model.DifficultyLevel,
             IsCompleted: model.IsCompleted,
             IsLocked: model.IsLocked,
             DateUnlockedUtc: model.DateUnlockedUtc,
@@ -20,11 +20,11 @@ public static class ChapterMappingExtensions
         );
     }
 
-    public static void ToModel(this ChapterModel chapterModel, ChapterDto dto)
+    public static void ToModel(this Chapter chapterModel, ChapterDto dto)
     {
         chapterModel.GateId = dto.GateId;
         chapterModel.ChapterNumber = dto.ChapterNumber;
-        chapterModel.DifficultyLevel = dto.DiffiutyLevel;
+        chapterModel.DifficultyLevel = dto.DifficultyLevel;
         chapterModel.IsCompleted = dto.IsCompleted;
         chapterModel.IsLocked = dto.IsLocked;
         chapterModel.DateUnlockedUtc = dto.DateUnlockedUtc;

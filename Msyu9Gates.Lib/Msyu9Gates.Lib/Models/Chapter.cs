@@ -2,7 +2,7 @@
 
 namespace Msyu9Gates.Lib.Models;
 
-public class ChapterModel
+public class Chapter
 {
     [Key] public int Id { get; set; }
     public int GateId { get; set; }
@@ -15,6 +15,6 @@ public class ChapterModel
     public string? Narrative { get; set; } = string.Empty;
     public Guid? RouteGuid { get; set; } = null;
 
-    public ICollection<KeyModel> Keys { get; set; } = new List<KeyModel>();
-    public ICollection<AttemptModel> Attempts { get; set; } = new List<AttemptModel>();
+    public ICollection<GateKey> Keys { get; set; } = new List<GateKey>();
+    public ICollection<Attempt> Attempts { get; set; } = new List<Attempt>();
 }

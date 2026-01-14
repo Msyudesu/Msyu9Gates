@@ -64,7 +64,7 @@ public static class DiscordManager
                 var existing = await dbContext.UsersDb.FirstOrDefaultAsync(u => u.DiscordId == discordId);
                 if (existing is null)
                 {
-                    dbContext.UsersDb.Add(new UserModel
+                    dbContext.UsersDb.Add(new User
                     {
                         DiscordId = discordId,
                         Username = username,

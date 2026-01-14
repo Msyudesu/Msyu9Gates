@@ -25,12 +25,18 @@ public static class ChapterDbUtils
         return chapter?.ToDto();
     }
 
+    public static async Task<string> GetChapterNarrativeAsync(ApplicationDbContext db, int gateId, int chapterNumber, CancellationToken ct)
+    {
+        var chapter = await db.ChaptersDb.AsNoTracking().Where(c => c.GateId == gateId && c.ChapterNumber == chapterNumber).FirstOrDefaultAsync(ct);
+        return chapter?.Narrative ?? string.Empty;
+    }
+
     public static async Task<ChapterDto> SaveChapterAsync(ApplicationDbContext db, ChapterDto chapterDto, CancellationToken ct)
     {
         var chapterModel = await db.ChaptersDb.Where(c => c.GateId == chapterDto.GateId && c.ChapterNumber == chapterDto.ChapterNumber).FirstOrDefaultAsync(ct);
         if (chapterModel is null)
         {
-            chapterModel = new ChapterModel();
+            chapterModel = new Chapter();
             chapterModel.ToModel(chapterDto);
             await db.ChaptersDb.AddAsync(chapterModel, ct);
         }

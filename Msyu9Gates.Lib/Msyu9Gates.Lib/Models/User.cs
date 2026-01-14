@@ -2,7 +2,7 @@
 
 namespace Msyu9Gates.Lib.Models;
 
-public class UserModel
+public class User
 {
     [Key] public int Id { get; set; }
     [Required] public string? DiscordId { get; set; }

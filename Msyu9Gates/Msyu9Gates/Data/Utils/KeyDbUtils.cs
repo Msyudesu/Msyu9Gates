@@ -36,7 +36,7 @@ public static class KeyDbUtils
         var keyModel = await db.KeysDb.Where(k => k.GateId == keyDto.GateId && k.ChapterId == keyDto.ChapterId && k.KeyNumber == keyDto.KeyNumber).FirstOrDefaultAsync(ct);
         if (keyModel is null)
         {
-            keyModel = new KeyModel();
+            keyModel = new GateKey();
             keyModel.ApplyFromDto(keyDto);
             await db.KeysDb.AddAsync(keyModel, ct);
         }

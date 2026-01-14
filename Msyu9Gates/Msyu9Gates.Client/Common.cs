@@ -6,16 +6,17 @@ namespace Msyu9Gates.Client;
 
 public static class Common
 {
-    public static async Task<string> GetNarrative(NavigationManager nav, HttpClient http, string apiKey, int gateNumber, int chapter)
+    public static async Task<string> GetNarrative(NavigationManager nav, HttpClient http, int gateNumber, int chapter = 0)
     {
         GateRequest request = new GateRequest(key: string.Empty, gate: gateNumber, chapter: chapter);
-
-        Uri uri = new Uri(nav.BaseUri + "api/GetGateNarrative");
+        
+        Uri uri = new Uri(nav.BaseUri + (chapter == 0 ? $"api/gates/{gateNumber}/narrative" 
+                                                      : $"api/chapters/{gateNumber}/{chapter}/narrative"));
+        
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
         {
             Content = JsonContent.Create(request)
         };
-        httpRequest.Headers.Add("X-API-KEY", apiKey);
 
         try
         {
@@ -24,14 +25,14 @@ public static class Common
             if (response.IsSuccessStatusCode)
             {
                 GateResponse? gateResponse = await response.Content.ReadFromJsonAsync<GateResponse>();
-                return gateResponse!.Message ?? "Missing Content";
+                return gateResponse?.Message ?? "Missing Content";
             }
             else
                 return "Failed to load narrative from Server";
         }
         catch
         {
-            return $"Error request for narrative failed";
+            return $"Error - request for narrative failed";
         }
     }
 }

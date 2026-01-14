@@ -23,9 +23,7 @@
 
 @code {
     string articleBody = string.Empty;
-    string? apiKey;
     string? title;
-    string? nextGate;
 
     [Parameter] public int gateNumber { get; set; }
     [Parameter] public int chapterNumber { get; set; }
@@ -34,12 +32,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;        
+        
     }
 
     protected override async Task OnParametersSetAsync()
     {
         title = $"Gate {Utils.ToRoman(gateNumber)} - Conclusion";
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapterNumber);
+        articleBody = await Common.GetNarrative(nav, http, gateNumber, chapterNumber);
     }
 }

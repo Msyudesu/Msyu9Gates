@@ -41,7 +41,6 @@
 
 @code {
     string articleBody = string.Empty;
-    string? apiKey;
     string? title;
     string homeRoute = "/";
     string nextChapterRoute = @"/"; // Home route for now. Needs data structure for gates/chapters implemented.
@@ -53,7 +52,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        apiKey = config["ClientUnsecuredApiKey"] ?? string.Empty;
+        
     }
 
     protected override async Task OnParametersSetAsync()
@@ -61,7 +60,7 @@
         title = $"Gate {Utils.ToRoman(gateNumber)} - Chapter {Utils.ToRoman(chapterNumber)}";
         homeRoute = $"/gate/{gateNumber}";
         
-        articleBody = await Common.GetNarrative(nav, http, apiKey, gateNumber, chapterNumber);
+        articleBody = await Common.GetNarrative(nav, http, gateNumber, chapterNumber);
     }
 
     private void GoHome() => nav.NavigateTo(homeRoute);

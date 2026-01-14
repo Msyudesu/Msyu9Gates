@@ -8,7 +8,7 @@ public static class DbUtils
 {
     /// <summary>
     /// Applies pending migrations. If migration fails and auto-recreate is permitted by configuration,
-    /// backs up (optional) and deletes the SQLite files, then retries a clean migration + optional seeding.
+    /// backs up (optional) and deletes the SQLite files, then retries a clean migration with optional seeding.
     /// </summary>
     public static async Task ApplyMigrationsAsync(WebApplication app, CancellationToken cancellationToken = default)
     {
@@ -30,7 +30,7 @@ public static class DbUtils
         try
         {
             await MigrateAsync(app, logger, cancellationToken);
-            // Attempt Seed, will check if data exists and fail safely if so.
+            // Attempt Seed, will check if data exists and skip safely if so.
             await SeedAsync(app, logger, cancellationToken);
             return;
         }
@@ -174,62 +174,5 @@ public static class DbUtils
         var v = config[key];
         return string.IsNullOrWhiteSpace(v) ? defaultValue :
             (T)Convert.ChangeType(v, typeof(T));
-    }
-
-    /// <summary>
-    /// Deprceated. Use ApplyMigrationsAsync instead.
-    /// </summary>
-    /// <param name="app"></param>
-    /// <param name="builder"></param>
-    /// <param name="args"></param>
-    /// <param name="logger"></param>
-    [Obsolete("Use ApplyMigrationsAsync instead.")]
-    public static void DatabaseMigrations(WebApplication app, WebApplicationBuilder builder, string[] args, ILogger logger)
-    {
-        try
-        {
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate(); // Applies existing migrations from the Migrations folder. Be sure to build and commit migrations before deploying.
-                                       // DO NOT COMMIT DATABASE FILES.  .db, .db-wal, and .db-shm (added to gitignore)
-                app.Logger.LogInformation($"Database Migration Completed in: Running in {app.Environment}");
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred during database migration or data rebuild. Deleting Database file.");
-
-            string db_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db");
-            string db_wal_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-wal");
-            string db_shm_path = Path.Combine(app.Environment.ContentRootPath, "msyu9gates.db-shm");
-
-            if (File.Exists(db_path))
-            {
-                File.Delete(db_path);
-                logger.LogWarning("Database file found: msyu9gates.db -- Deleting.");
-            }
-            if (File.Exists(db_wal_path))
-            {
-                File.Delete(db_wal_path);
-                logger.LogWarning("Database WAL file found: msyu9gates.db-wal -- Deleting.");
-            }
-            if (File.Exists(db_shm_path))
-            {
-                File.Delete(db_shm_path);
-                logger.LogWarning("Database SHM file found: msyu9gates.db-shm -- Deleting.");
-            }
-
-            if (args.Length == 0)
-            {
-                logger.LogError("Retrying migration after deleting database files.");
-                Program.Main(new string[1] { "-retry" }); // Restart the application to attempt migration again.
-            }
-            else if (args.Length > 0 && args[0] == "-retry")
-            {
-                logger.LogError("Retry failed. Exiting.");
-                return; // Exit the application if migration fails.
-            }
-        }
     }
 }

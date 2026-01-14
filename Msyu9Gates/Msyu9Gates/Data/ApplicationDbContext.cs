@@ -13,11 +13,11 @@ public class ApplicationDbContext : DbContext
         _config = config;
     }
 
-    public DbSet<KeyModel> KeysDb => Set<KeyModel>();
-    public DbSet<GateModel> GatesDb => Set<GateModel>();
-    public DbSet<ChapterModel> ChaptersDb => Set<ChapterModel>();
-    public DbSet<UserModel> UsersDb => Set<UserModel>();
-    public DbSet<AttemptModel> AttemptsDb => Set<AttemptModel>();
+    public DbSet<GateKey> KeysDb => Set<GateKey>();
+    public DbSet<Gate> GatesDb => Set<Gate>();
+    public DbSet<Chapter> ChaptersDb => Set<Chapter>();
+    public DbSet<User> UsersDb => Set<User>();
+    public DbSet<Attempt> AttemptsDb => Set<Attempt>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -26,23 +26,23 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<GateModel>()
+        modelBuilder.Entity<Gate>()
             .HasIndex(g => g.GateNumber)
             .IsUnique();
 
-        modelBuilder.Entity<ChapterModel>()
+        modelBuilder.Entity<Chapter>()
             .HasIndex(c => new { c.GateId, c.ChapterNumber })
             .IsUnique();
 
-        modelBuilder.Entity<KeyModel>()
+        modelBuilder.Entity<GateKey>()
             .HasIndex(k => new { k.KeyNumber, k.KeyValue})
             .IsUnique();
 
-        modelBuilder.Entity<UserModel>()
+        modelBuilder.Entity<User>()
             .HasIndex(u => u.DiscordId)
             .IsUnique();
 
-        modelBuilder.Entity<AttemptModel>()
+        modelBuilder.Entity<Attempt>()
             .HasIndex(a => new { a.UserId, a.GateId, a.ChapterId });
 
         base.OnModelCreating(modelBuilder);

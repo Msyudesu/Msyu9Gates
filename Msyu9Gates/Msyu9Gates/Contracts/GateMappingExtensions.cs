@@ -4,7 +4,7 @@ namespace Msyu9Gates.Contracts
 {
     public static class GateMappingExtensions
     {
-        public static GateDto ToDto(this GateModel gateModel) =>
+        public static GateDto ToDto(this Gate gateModel) =>
             new GateDto(
                 gateModel.Id,
                 gateModel.GateNumber,
@@ -17,7 +17,7 @@ namespace Msyu9Gates.Contracts
                 gateModel.Conclusion
             );
 
-        public static void ApplyFromDto(this GateModel gateModel, GateDto gateDto)
+        public static void ApplyFromDto(this Gate gateModel, GateDto gateDto)
         {
             gateModel.GateNumber = gateDto.GateNumber;
             gateModel.GateOverallDifficultyLevel = gateDto.GateOverallDifficultyLevel;

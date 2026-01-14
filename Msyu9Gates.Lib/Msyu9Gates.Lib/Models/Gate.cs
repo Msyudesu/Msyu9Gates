@@ -2,7 +2,7 @@
 
 namespace Msyu9Gates.Lib.Models;
 
-public class GateModel
+public class Gate
 {
     [Key] public int Id { get; set; }
     public int GateNumber { get; set; }
@@ -14,5 +14,5 @@ public class GateModel
     public string? Narrative { get; set; } = string.Empty;
     public string? Conclusion { get; set; } = string.Empty;
 
-    public ICollection<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
+    public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 }

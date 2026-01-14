@@ -2,7 +2,7 @@
 
 namespace Msyu9Gates.Lib.Models;
 
-public class AttemptModel
+public class Attempt
 {
     [Key] public int Id { get; set; }
     public DateTimeOffset AttemptedAtUtc { get; set; }
