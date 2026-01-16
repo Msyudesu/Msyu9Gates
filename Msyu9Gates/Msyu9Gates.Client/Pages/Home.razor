@@ -24,7 +24,14 @@
                                         </h5>
                                         @* Later: status summary / difficulty from DB *@
                                         <p class="card-text text-center small" style="color: silver">
-                                            Difficulty: TBD
+                                            @if( i < gates.Count + 1)
+                                            {
+                                                @("Difficulty: " + Enum.GetName(typeof(Utils.Difficulty), gates[i - 1].GateOverallDifficultyLevel) ?? "TBD");
+                                            }
+                                            else
+                                            {
+                                                @("Difficulty: TBD");
+                                            }
                                         </p>
                                     </div>
                                     <div class="text-center mt-3">
@@ -45,11 +52,25 @@
                     
                     @* Placeholder: later bind from DB *@
 
-                    @for (var k = 1; k <= 27; k++)
+                    @for (var k = 0; k < unlockedKeys.Count; k++)
                     {
-                        var discovered = k <= 9 ? true : false;
-                        <div class="key-icon @(discovered ? "key-discovered" : "key-locked")">
-                            <span>@k</span>
+                        var key = unlockedKeys[k];
+
+                        <div class="key-icon key-discovered" @onclick="() => ToggleKeyDetails(key)">
+                            <span>@(k + 1)</span>
+                        </div>
+
+                        @if(expandedKey == key)
+                        {
+                            <div class="mt-1 mb-2 key-details">
+                                <input type="text" class="form-control form-control-sm" readonly value="@key.KeyValue" />
+                            </div>
+                        }
+                    }
+                    @for (var k = unlockedKeys.Count; k < 27; k++)
+                    {
+                        <div class="key-icon key-locked">
+                            <span>@(k + 1)</span>
                         </div>
                     }
                 </div>
@@ -79,7 +100,9 @@
 
 @code {
     HttpClient http = new HttpClient();
-    List<string> unlockedKeys = new List<string>();
+    List<KeyDto> unlockedKeys = new List<KeyDto>();
+    List<GateDto> gates = new List<GateDto>();
+    KeyDto? expandedKey;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -93,11 +116,29 @@
     {
         Uri uri = new Uri(nav.BaseUri + "api/keys/unlocked");
         var response = await http.GetAsync(uri);
-
         if (response.IsSuccessStatusCode)
         {
-            unlockedKeys = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>() { "No Keys Unlocked." };
+            unlockedKeys = await response.Content.ReadFromJsonAsync<List<KeyDto>>() ?? new List<KeyDto>() { };
+        }
+
+        uri = new Uri(nav.BaseUri + "api/gates/all");
+        response = await http.GetAsync(uri);
+        if(response.IsSuccessStatusCode)
+        {
+            gates = await response.Content.ReadFromJsonAsync<List<GateDto>>() ?? new List<GateDto>() { };
         }
         StateHasChanged();
+    }
+
+    private void ToggleKeyDetails(KeyDto key)
+    {
+        if(expandedKey == key)
+        {
+            expandedKey = null;
+        }
+        else
+        {
+            expandedKey = key;
+        }
     }
 }
