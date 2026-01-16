@@ -4,18 +4,77 @@
 @inject NavigationManager nav
 @inject IJSRuntime js
 
-<PageTitle>Home</PageTitle>
+<PageTitle>9 Gates Home</PageTitle>
 
-<h1>Gate Hub</h1>
+<div class="container py-4 home-page">
+    <div class="row g-4">
+        <div class="col-12 col-lg-8">
+            <section class="gate-grid-section mb-4">
+                <h2 class="section-title mb-3">Gates</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    @for (var i = 1; i <= 9; i++)
+                    {
+                        var gateNumber = i;
+                        <div class="col">
+                            <div class="card gate-card h-100">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <div>
+                                        <h5 class="card-title text-center">
+                                            @Utils.ToRoman(gateNumber)
+                                        </h5>
+                                        @* Later: status summary / difficulty from DB *@
+                                        <p class="card-text text-center small" style="color: silver">
+                                            Difficulty: TBD
+                                        </p>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <NavLink class="btn btn-sm btn-primary" href="@($"/gate/{gateNumber}")">
+                                            Go
+                                        </NavLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
 
-<div>
-    <h3>Discovered Keys:</h3>
-    <ul>
-        @foreach (var key in unlockedKeys)
-        {
-            <li>@key</li>
-        }
-    </ul>
+            <section class="keys-section">
+                <h2 class="section-title mb-3">Keys</h2>
+                <div class="keys-grid d-flex flex-wrap gap-2">
+                    
+                    @* Placeholder: later bind from DB *@
+
+                    @for (var k = 1; k <= 27; k++)
+                    {
+                        var discovered = k <= 9 ? true : false;
+                        <div class="key-icon @(discovered ? "key-discovered" : "key-locked")">
+                            <span>@k</span>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="updates-section">
+                <h2 class="section-title mb-3">Updates & Hints</h2>
+                <div class="updates-card p-3">
+                    <p class="small mb-1" style="color: silver">Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</p>
+                    <hr />
+                    <article class="updates-body">
+                        @* For now, static; later you can pull from a DB or markdown file *@
+                        <p>Welcome to the redesigned Msyu9 Gates experience.</p>
+                        <ul>
+                            <li>New layout and navigation bar.</li>
+                            <li>Story and puzzles are being reintroduced gate by gate.</li>
+                            <li>Watch this space for hints and patch notes.</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
 </div>
 
 @code {

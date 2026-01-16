@@ -82,86 +82,6 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
-.keypad-container {
-    width: 150px;
-    margin: 20px 0;
-}
-
-.keypad-display {
-    width: 120%;
-    margin-bottom: 10px;
-    text-align: right;
-    font-size: 1.2em;
-}
-
-.keypad-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 8px;
-    width: 180px; /* Adjust as needed */
-    margin: 0 auto;
-}
-
-.keypad-btn {
-    font-size: 1.2em;
-    padding: 16px 0;
-}
-
-.keypad-btn.zero {
-    grid-column: 2 / 3; /* Center the 0 button in the second column of the last row */
-}
-
-.keypad-btn.submit {
-    width: 120%;
-    margin-top: 8px;
-    background: #26b050;
-}
-
-.keypad-btn.clear {
-    width: 120%;
-    margin-top: 8px;
-    background: #f88;
-}
-
-.page-sign {
-    border-radius: 75px;
-    padding: 20px;
-    width: 450px;
-    height: 450px;
-}
-
-.audio-player {
-    color: black;
-}
-
-.glyph {
-    border-radius: 75px;
-    border-color: black;
-    border-width: 1px;
-    border-style: dashed; 
-    border-width: 5px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    background-color: black;
-}
-
-.glyph-link {
-    color: #006bb7;
-}
-
-.glyph-primary {
-    color: #000;
-    background-color: black;
-}
-
-.glyph:focus, .glyph:active:focus, .glyph-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #000;
-}
-
-.glyph:hover {
-    background-color: black;
-    border-color: red;
-}
 
 .narrative-fade {
     animation: fadeIn 1s ease-in;
@@ -193,6 +113,13 @@ h1:focus {
     }
 }
 
+.page-sign {
+    border-radius: 75px;
+    padding: 20px;
+    width: 450px;
+    height: 450px;
+}
+
 .dropdown {
     position: relative;
     display: inline-block;
@@ -211,4 +138,58 @@ h1:focus {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.section-title {
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.gate-card {
+    background-color: #111;
+    border: 1px solid #333;
+    color: red;
+}
+
+.gate-card .btn-primary {
+        background-color: #808080;
+        border-color: #808000;
+    }
+
+.gate-card .btn-primary:hover {
+            background-color: red;
+            border-color: red;
+        }
+
+.keys-grid {
+    align-items: center;
+}
+
+.key-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.key-discovered {
+    background-color: #26b050;
+    border-color: #26b050;
+    color: #000;
+}
+
+.key-locked {
+    background-color: #000;
+    border-color: #555;
+    color: #555;
+}
+
+.updates-section .updates-card {
+    background-color: #111;
+    border-radius: 0.5rem;
+    border: 1px solid #333;
 }

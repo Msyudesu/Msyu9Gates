@@ -1,0 +1,71 @@
+﻿.app-navbar {
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+
+    background-color: #000000;
+}
+
+.app-navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+    margin-right: 2rem;
+}
+
+.navbar-brand-text {
+    color: red;
+    font-size: 2rem;
+    padding-left: 15px;
+}
+
+.app-navbar .navbar-collapse {
+    display: flex !important;
+    align-items: center;
+}
+
+.app-navbar .navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.app-navbar .navbar-nav .nav-item {
+    margin: 2px;
+    padding: 2px;
+    list-style: none;
+}
+
+.app-navbar .navbar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.app-navbar .gate-link {
+    color: red !important;
+    font-size: 2rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    background-color: #000000 !important;
+}
+
+.app-navbar .gate-link.active {
+    background-color: red !important;
+    color: black !important;
+}
+
+.app-navbar .navbar-nav .nav-item:first-child,
+.app-navbar .navbar-nav .nav-item:last-child,
+.app-navbar .navbar-nav .nav-link:first-child,
+.app-navbar .navbar-nav .nav-link:last-child {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+    line-height: 1.2 !important;
+}

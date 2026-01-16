@@ -1,16 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
+<div class="app-shell d-flex flex-column min-vh-100">
+    <header>
         <NavMenu />
-    </div>
+    </header>
 
-    <main class="main-window">
-        
+    <main class="flex-fill main-window">
         <article class="content px-4">
             @Body
         </article>
     </main>
+
+    <footer class="app-footer text-center py-2 small" style="color: silver">
+        <!-- Optional footer content -->
+        <span>Msyu9 Gates &copy; @DateTime.UtcNow.Year</span>
+    </footer>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
