@@ -1,0 +1,48 @@
+﻿.gate-card {
+    background-color: #111;
+    border: 1px solid #333;
+    color: red;
+}
+
+.gate-card .btn-primary {
+    background-color: #808080;
+    border-color: #808000;
+}
+
+.gate-card .btn-primary:hover {
+        background-color: red;
+        border-color: red;
+}
+
+.keys-grid {
+    align-items: center;
+}
+
+.key-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.key-discovered {
+    background-color: #26b050;
+    border-color: #26b050;
+    color: #000;
+}
+
+.key-locked {
+    background-color: #000;
+    border-color: #555;
+    color: #555;
+}
+
+.updates-section .updates-card {
+    background-color: #111;
+    border-radius: 0.5rem;
+    border: 1px solid #333;
+}
