@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Msyu9Gates.Lib.Models;
+using Msyu9Gates.Data.Models;
 
 namespace Msyu9Gates.Data;
 

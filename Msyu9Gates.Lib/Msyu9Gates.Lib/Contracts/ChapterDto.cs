@@ -1,4 +1,4 @@
-﻿namespace Msyu9Gates.Contracts;
+﻿namespace Msyu9Gates.Lib.Contracts;
 
 public sealed record ChapterDto(
     int Id,

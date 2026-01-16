@@ -9,7 +9,8 @@ using Msyu9Gates.Contracts;
 using Msyu9Gates.Data;
 using Msyu9Gates.Data.Utils;
 using Msyu9Gates.Lib;
-using Msyu9Gates.Lib.Models;
+using Msyu9Gates.Data.Models;
+using Msyu9Gates.Lib.Contracts;
 
 namespace Msyu9Gates.API;
 
@@ -130,8 +131,8 @@ public static class APIManager
 
         app.MapGet("/api/keys/unlocked", async (ApplicationDbContext db, CancellationToken ct) =>
         {
-            var key = await KeyDbUtils.GetUnlockedKeys(db, ct);
-            return key is null ? Results.NotFound() : Results.Ok(key);
+            var keys = await KeyDbUtils.GetUnlockedKeys(db, ct);
+            return keys is null ? Results.NotFound() : Results.Ok(keys);
         });
 
         app.MapPut("/api/keys/save", async (KeyDto keyDto, ApplicationDbContext db, CancellationToken ct) =>

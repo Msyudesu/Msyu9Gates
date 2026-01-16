@@ -1,4 +1,5 @@
-﻿using Msyu9Gates.Lib.Models;
+﻿using Msyu9Gates.Data.Models;
+using Msyu9Gates.Lib.Contracts;
 
 namespace Msyu9Gates.Contracts;
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 using Msyu9Gates.Components;
 using Msyu9Gates.Data;
-using Msyu9Gates.Lib.Models;
+using Msyu9Gates.Data.Models;
 using Msyu9Gates.Discord;
 using Msyu9Gates.Data.Utils;
 using Msyu9Gates.API;

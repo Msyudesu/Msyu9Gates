@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Msyu9Gates.Lib.Models;
+namespace Msyu9Gates.Data.Models;
 
 public class Chapter
 {

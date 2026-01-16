@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using Msyu9Gates.Lib.Models;
-using Msyu9Gates.Contracts;
+using Msyu9Gates.Data.Models;
+using Msyu9Gates.Lib.Contracts;
 
 namespace Msyu9Gates.Data.Utils;
 
@@ -25,10 +25,10 @@ public static class KeyDbUtils
         return key?.ToDto();
     }
 
-    public static async Task<KeyDto?> GetUnlockedKeys(ApplicationDbContext db, CancellationToken ct)
+    public static async Task<List<KeyDto>> GetUnlockedKeys(ApplicationDbContext db, CancellationToken ct)
     {
-        var key = await db.KeysDb.AsNoTracking().Where(k => k.Discovered).FirstOrDefaultAsync(ct);
-        return key?.ToDto();
+        var keys = await db.KeysDb.AsNoTracking().Where(k => k.Discovered).ToListAsync(ct);
+        return keys.Select(k => k.ToDto()).ToList();
     }
 
     public static async Task<KeyDto> SaveKeyAsync(ApplicationDbContext db, KeyDto keyDto, CancellationToken ct)

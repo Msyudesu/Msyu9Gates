@@ -85,13 +85,13 @@
     {
         if (firstRender)
         {
-            //await UpdateUnlockedKeys();
+            await UpdateUnlockedKeys();
         }
     }
 
     private async Task UpdateUnlockedKeys()
     {
-        Uri uri = new Uri(nav.BaseUri + "api/GetKeys");
+        Uri uri = new Uri(nav.BaseUri + "api/keys/unlocked");
         var response = await http.GetAsync(uri);
 
         if (response.IsSuccessStatusCode)

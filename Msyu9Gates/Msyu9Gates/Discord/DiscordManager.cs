@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 using Msyu9Gates.Data;
-using Msyu9Gates.Lib.Models;
+using Msyu9Gates.Data.Models;
 
 namespace Msyu9Gates.Discord;
 

@@ -1,8 +1,9 @@
-﻿namespace Msyu9Gates.Contracts;
+﻿using Msyu9Gates.Data.Models;
+using Msyu9Gates.Lib.Contracts;
 
 public static class KeyMappingExtensions
 {
-    public static KeyDto ToDto(this Lib.Models.GateKey keyModel) =>
+    public static KeyDto ToDto(this GateKey keyModel) =>
         new KeyDto(
             keyModel.Id,
             keyModel.GateId,
@@ -12,7 +13,7 @@ public static class KeyMappingExtensions
             keyModel.Discovered,
             keyModel.DateDiscoveredUtc
         );
-    public static void ApplyFromDto(this Lib.Models.GateKey keyModel, KeyDto keyDto)
+    public static void ApplyFromDto(this GateKey keyModel, KeyDto keyDto)
     {
         keyModel.GateId = keyDto.GateId;
         keyModel.ChapterId = keyDto.ChapterId;
