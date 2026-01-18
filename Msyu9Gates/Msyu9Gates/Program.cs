@@ -46,6 +46,8 @@ public class Program
 
         builder.Services.AddResponseCompression();
 
+        builder.Services.AddHttpClient();
+
         var app = builder.Build();
         var discorderAuthOptions = app.Services.GetRequiredService<IOptions<DiscordAuthOptions>>().Value;
         var logger = app.Services.GetRequiredService<ILogger<Program>>();

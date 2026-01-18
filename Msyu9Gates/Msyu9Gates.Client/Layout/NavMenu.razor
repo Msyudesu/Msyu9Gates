@@ -1,4 +1,6 @@
-﻿<nav class="navbar navbar-expand-lg navbar-dark app-navbar px-3">
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar px-3">
     <a class="navbar-brand" href="">
         <span class="navbar-brand-text">9 Gates</span>
     </a>
@@ -20,6 +22,12 @@
                     </NavLink>
                 </li>
             }
+            @if (isAdmin)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link gate-link"href="@($"/admin")">Admin</NavLink>
+                </li>
+            }
         </ul>
 
         <div class="d-flex align-items-center nav-login">
@@ -29,5 +37,17 @@
 </nav>
 
 @code {
-    
+    private bool isAdmin = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if(user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            isAdmin = user.IsInRole("Admin");
+        }
+    }
+
 }

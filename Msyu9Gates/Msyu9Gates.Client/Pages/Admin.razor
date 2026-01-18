@@ -1,0 +1,410 @@
+﻿@page "/admin"
+@rendermode InteractiveWebAssembly
+
+@attribute [Authorize(Roles = "Admin")]
+
+@inject NavigationManager NavManager
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<div class="container py-4 home-page">
+    <h1 class="mb-4">Admin Dashboard</h1>
+
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <button type="button" class="nav-link @(activeTab == AdminTab.Gates ? "active" : "")"
+                    @onclick="() => activeTab = AdminTab.Gates">
+                Gates
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link @(activeTab == AdminTab.Chapters ? "active" : "")"
+                    @onclick="() => activeTab = AdminTab.Chapters">
+                Chapters
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link @(activeTab == AdminTab.Keys ? "active" : "")"
+                    @onclick="() => activeTab = AdminTab.Keys">
+                Keys
+            </button>
+        </li>
+    </ul>
+
+    @if (!string.IsNullOrWhiteSpace(statusMessage))
+    {
+        <div class="alert @statusClass">@statusMessage</div>
+    }
+
+    @if (isLoading)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        @switch (activeTab)
+        {
+            case AdminTab.Gates:
+                <h2>Gates</h2>
+
+                @foreach (var gate in gates.OrderBy(g => g.GateNumber))
+                {
+                    <div class="card gate-card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">Gate @gate.GateNumber</h5>
+                                <button class="btn btn-sm btn-primary" @onclick="() => SaveGateAsync(gate)">Save</button>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label">Difficulty</label>
+                                    <input class="form-control" type="number"
+                                           value="@gate.GateOverallDifficultyLevel"
+                                           @onchange="e => UpdateGate(gate, gate with { GateOverallDifficultyLevel = ParseInt(e.Value, gate.GateOverallDifficultyLevel) })" />
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" checked="@gate.IsCompleted"
+                                               @onchange="e => UpdateGate(gate, gate with { IsCompleted = ParseBool(e.Value, gate.IsCompleted) })" />
+                                        <label class="form-check-label">Completed</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" checked="@gate.IsLocked"
+                                               @onchange="e => UpdateGate(gate, gate with { IsLocked = ParseBool(e.Value, gate.IsLocked) })" />
+                                        <label class="form-check-label">Locked</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Narrative</label>
+                                    <input class="form-control"
+                                           value="@gate.Narrative"
+                                           @onchange="e => UpdateGate(gate, gate with { Narrative = e.Value?.ToString() })" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Conclusion</label>
+                                    <input class="form-control"
+                                           value="@gate.Conclusion"
+                                           @onchange="e => UpdateGate(gate, gate with { Conclusion = e.Value?.ToString() })" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Date Unlocked (UTC)</label>
+                                    <input class="form-control" value="@FormatDate(gate.DateUnlocked)" readonly />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Date Completed (UTC)</label>
+                                    <input class="form-control" value="@FormatDate(gate.DateCompleted)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                break;
+
+            case AdminTab.Chapters:
+                <h2>Chapters</h2>
+
+                @foreach (var chapter in chapters.OrderBy(c => c.GateId).ThenBy(c => c.ChapterNumber))
+                {
+                    <div class="card gate-card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">GateId @chapter.GateId - Chapter @chapter.ChapterNumber</h5>
+                                <button class="btn btn-sm btn-primary" @onclick="() => SaveChapterAsync(chapter)">Save</button>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">GateId</label>
+                                    <input class="form-control" type="number" value="@chapter.GateId"
+                                           @onchange="e => UpdateChapter(chapter, chapter with { GateId = ParseInt(e.Value, chapter.GateId) })" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">ChapterNumber</label>
+                                    <input class="form-control" type="number" value="@chapter.ChapterNumber"
+                                           @onchange="e => UpdateChapter(chapter, chapter with { ChapterNumber = ParseInt(e.Value, chapter.ChapterNumber) })" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">Difficulty</label>
+                                    <input class="form-control" type="number" value="@chapter.DifficultyLevel"
+                                           @onchange="e => UpdateChapter(chapter, chapter with { DifficultyLevel = ParseInt(e.Value, chapter.DifficultyLevel) })" />
+                                </div>
+
+                                <div class="col-6 col-md-1">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" checked="@chapter.IsCompleted"
+                                               @onchange="e => UpdateChapter(chapter, chapter with { IsCompleted = ParseBool(e.Value, chapter.IsCompleted) })" />
+                                        <label class="form-check-label">Done</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-2">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" checked="@chapter.IsLocked"
+                                               @onchange="e => UpdateChapter(chapter, chapter with { IsLocked = ParseBool(e.Value, chapter.IsLocked) })" />
+                                        <label class="form-check-label">Locked</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Narrative</label>
+                                    <input class="form-control" value="@chapter.Narrative"
+                                           @onchange="e => UpdateChapter(chapter, chapter with { Narrative = e.Value?.ToString() })" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">RouteGuid</label>
+                                    <input class="form-control" value="@chapter.RouteGuid"
+                                           @onchange="e => UpdateChapter(chapter, chapter with { RouteGuid = ParseGuid(e.Value) })" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Date Unlocked (UTC)</label>
+                                    <input class="form-control" value="@FormatDate(chapter.DateUnlockedUtc)" readonly />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Date Completed (UTC)</label>
+                                    <input class="form-control" value="@FormatDate(chapter.DateCompletedUtc)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                break;
+
+            case AdminTab.Keys:
+                <h2>Keys</h2>
+
+                @foreach (var key in keys.OrderBy(k => k.GateId).ThenBy(k => k.KeyNumber))
+                {
+                    <div class="card gate-card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">GateId @key.GateId - ChapterId @key.ChapterId - Key @key.KeyNumber</h5>
+                                <button class="btn btn-sm btn-primary" @onclick="() => SaveKeyAsync(key)">Save</button>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">GateId</label>
+                                    <input class="form-control" type="number" value="@key.GateId"
+                                           @onchange="e => UpdateKey(key, key with { GateId = ParseInt(e.Value, key.GateId) })" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">ChapterId</label>
+                                    <input class="form-control" type="number" value="@key.ChapterId"
+                                           @onchange="e => UpdateKey(key, key with { ChapterId = ParseInt(e.Value, key.ChapterId) })" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">KeyNumber</label>
+                                    <input class="form-control" type="number" value="@key.KeyNumber"
+                                           @onchange="e => UpdateKey(key, key with { KeyNumber = ParseInt(e.Value, key.KeyNumber) })" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" checked="@key.Discovered"
+                                               @onchange="e => UpdateKey(key, key with { Discovered = ParseBool(e.Value, key.Discovered) })" />
+                                        <label class="form-check-label">Discovered</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">KeyValue</label>
+                                    <input class="form-control" value="@key.KeyValue"
+                                           @onchange="e => UpdateKey(key, key with { KeyValue = e.Value?.ToString() })" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Date Discovered (UTC)</label>
+                                    <input class="form-control" value="@FormatDate(key.DateDiscoveredUtc)" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                break;
+        }
+    }
+</div>
+
+@code {
+    private enum AdminTab
+    {
+        Gates,
+        Chapters,
+        Keys
+    }
+
+    private readonly HttpClient http = new();
+
+    private AdminTab activeTab = AdminTab.Gates;
+
+    private bool isLoading = true;
+
+    private string? statusMessage;
+    private string statusClass = "alert-info";
+
+    private List<GateDto> gates = new();
+    private List<ChapterDto> chapters = new();
+    private List<KeyDto> keys = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri(NavManager.BaseUri);
+
+        await LoadAllAsync();
+        isLoading = false;
+    }
+
+    private async Task LoadAllAsync()
+    {
+        try
+        {
+            gates = await GetJsonAsync<List<GateDto>>("api/gates/all") ?? new List<GateDto>();
+            chapters = await GetJsonAsync<List<ChapterDto>>("api/chapters/all") ?? new List<ChapterDto>();
+            keys = await GetJsonAsync<List<KeyDto>>("api/keys/all") ?? new List<KeyDto>();
+
+            SetStatus("Loaded.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Load failed: {ex.Message}", isError: true);
+        }
+    }
+
+    private async Task SaveGateAsync(GateDto gate)
+    {
+        try
+        {
+            var response = await http.PutAsJsonAsync($"api/gates/save/{gate.GateNumber}", gate);
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Save gate failed: {response.StatusCode}", isError: true);
+                return;
+            }
+
+            SetStatus($"Saved gate {gate.GateNumber}.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Save gate error: {ex.Message}", isError: true);
+        }
+    }
+
+    private async Task SaveChapterAsync(ChapterDto chapter)
+    {
+        try
+        {
+            var response = await http.PutAsJsonAsync("api/chapters/save", chapter);
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Save chapter failed: {response.StatusCode}", isError: true);
+                return;
+            }
+
+            SetStatus($"Saved chapter GateId={chapter.GateId} Chapter={chapter.ChapterNumber}.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Save chapter error: {ex.Message}", isError: true);
+        }
+    }
+
+    private async Task SaveKeyAsync(KeyDto key)
+    {
+        try
+        {
+            var response = await http.PutAsJsonAsync("api/keys/save", key);
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Save key failed: {response.StatusCode}", isError: true);
+                return;
+            }
+
+            SetStatus($"Saved key GateId={key.GateId} Key={key.KeyNumber}.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Save key error: {ex.Message}", isError: true);
+        }
+    }
+
+    private void UpdateGate(GateDto oldGate, GateDto newGate)
+    {
+        var idx = gates.FindIndex(g => g.Id == oldGate.Id);
+        if (idx >= 0)
+        {
+            gates[idx] = newGate;
+        }
+    }
+
+    private void UpdateChapter(ChapterDto oldChapter, ChapterDto newChapter)
+    {
+        var idx = chapters.FindIndex(c => c.Id == oldChapter.Id);
+        if (idx >= 0)
+        {
+            chapters[idx] = newChapter;
+        }
+    }
+
+    private void UpdateKey(KeyDto oldKey, KeyDto newKey)
+    {
+        var idx = keys.FindIndex(k => k.Id == oldKey.Id);
+        if (idx >= 0)
+        {
+            keys[idx] = newKey;
+        }
+    }
+
+    private void SetStatus(string message, bool isError)
+    {
+        statusMessage = message;
+        statusClass = isError ? "alert-danger" : "alert-success";
+    }
+
+    private static int ParseInt(object? value, int fallback)
+        => int.TryParse(value?.ToString(), out var v) ? v : fallback;
+
+    private static bool ParseBool(object? value, bool fallback)
+    {
+        if (value is bool b)
+        {
+            return b;
+        }
+
+        return bool.TryParse(value?.ToString(), out var v) ? v : fallback;
+    }
+
+    private async Task<T> GetJsonAsync<T>(string relativeUrl)
+    {
+        using var response = await http.GetAsync(relativeUrl);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"GET {relativeUrl} failed: {(int)response.StatusCode} {response.StatusCode}. Body starts with: {body[..Math.Min(body.Length, 80)]}");
+        }
+
+        return (await response.Content.ReadFromJsonAsync<T>())!;
+    }
+
+    private static Guid? ParseGuid(object? value)
+        => Guid.TryParse(value?.ToString(), out var g) ? g : null;
+
+    private static string FormatDate(DateTimeOffset? value)
+        => value is null ? string.Empty : value.Value.ToString("u");
+}
