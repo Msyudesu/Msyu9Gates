@@ -58,10 +58,21 @@ public static class APIManager
             return gate is null ? Results.NotFound() : Results.Ok(gate);
         });
 
-        app.MapGet("/api/gates/{gateNumber:int}/narrative", async (int gateNumber, ApplicationDbContext db, CancellationToken ct) =>
+        app.MapPost("/api/gates/{gateNumber:int}/narrative", async (ApplicationDbContext db, CancellationToken ct, [FromBody] GateRequest request) =>
         {
-            var narrative = await GateDbUtils.GetGateNarrativeAsync(db, gateNumber, ct);
-            return Results.Ok(new { Narrative = await ReadNarrativeFromFileAsync(narrative) });
+            var narrative = await GateDbUtils.GetGateNarrativeAsync(db, request.Gate, ct);
+            string? narrativeText = await ReadNarrativeFromFileAsync(narrative);
+
+            if (!String.IsNullOrEmpty(narrativeText))
+            {
+                GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: narrativeText);
+                return Results.Ok(response);
+            }
+            else
+            {
+                GateResponse response = new GateResponse(key: null, chapter: request.Chapter, success: true, message: "Request successful, but failed to retrieve narrative text from file.");
+                return Results.Problem($"Failed to retrieve narrative text for Gate {request.Gate} Chapter {request.Chapter}");
+            }
         });
 
         app.MapPut("/api/gates/save/{gateNumber:int}", async (int gateNumber, GateDto gateDto, ApplicationDbContext db, CancellationToken ct) =>

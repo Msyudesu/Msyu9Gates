@@ -8,35 +8,35 @@
   </PropertyGroup>  
 
   <ItemGroup>
-    <Content Include="Data\Misc\Gate3HomeNarrative.txt">
+    <Content Include="Data\Misc\G03_C01.txt">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Data\Misc\Gate3Chapter2Narrative.txt">
+		<Content Include="Data\Misc\G03_C02.txt">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Data\Misc\Gate3Chapter3Narrative.txt">
+		<Content Include="Data\Misc\G03_C03.txt">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Data\Misc\Gate3Chapter4Narrative.txt">
+		<Content Include="Data\Misc\G03_C04.txt">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Data\Misc\Gate3Conclusion.txt">
+		<Content Include="Data\Misc\G03_CONCLUSION.txt">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>

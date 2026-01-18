@@ -39,7 +39,6 @@ else
     </div>
     <br />
     <p>Gate Difficulty: @difficulty</p>
-    <p>Keys: @gateNumber</p>
 
     @foreach (var (line, idx) in articleBody.Split('\n').Select((l, i) => (l, i)))
     {
@@ -61,13 +60,16 @@ else
 
     // protected override async Task OnInitializedAsync()
     // {
-        
+
     // }
 
     protected override async Task OnParametersSetAsync()
     {
         title = $"Gate {Utils.ToRoman(gateNumber)}";
+        difficulty = GetGateDifficulty();
 
         articleBody = await Common.GetNarrative(nav, http, gateNumber);
     }
+
+    private string GetGateDifficulty() => Enum.GetName(typeof(Utils.Difficulty), gateNumber) ?? "Unknown";
 }
