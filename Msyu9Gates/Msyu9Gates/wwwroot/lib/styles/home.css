@@ -1,0 +1,112 @@
+﻿.gate-card {
+    background-color: #111;
+    border: 1px solid #333;
+    color: red;
+}
+
+.gate-card .btn-primary {
+    background-color: #808080;
+    border-color: #808000;
+}
+
+.gate-card .btn-primary:hover {
+        background-color: red;
+        border-color: red;
+}
+
+.keys-grid {
+    align-items: center;
+}
+
+.key-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.key-discovered {
+    background-color: #000000;
+    border-color: #26b050;
+    color: silver;
+}
+
+.key-discovered-select {
+    background-color: lawngreen;
+    border-color: #26b050;
+    color: black;
+}
+
+.key-locked {
+    background-color: #000;
+    border-color: red;
+    color: silver;
+}
+
+.key-details {
+    padding-top: 5px;
+    max-width: 200px;
+    align-content: center;
+}
+
+.key-details-box {    
+    height: 40px;
+    border-radius: 0.5rem;
+    background-color: #000000;
+    border: 2px solid #333;
+    border-color: #26b050;
+    color: silver;
+}
+
+.key-pill {
+    display: inline-flex;
+    align-items: center;    
+    border-radius: 999px;
+    background-color: black;
+    border: 2px solid #333;
+    cursor: pointer;
+    gap: 6px;
+}
+
+/* Reuse your discovered color scheme */
+.key-pill.key-discovered {
+    border-color: #26b050;
+}
+
+/* Number circle on the left */
+.key-pill-icon {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background-color: black;
+    color: silver;
+}
+
+/* Textbox blended into the pill */
+.key-pill-input {
+    background-color: transparent;
+    border: none;
+    color: azure;
+    padding: 2px 4px;
+    font-size: 0.85rem;
+    min-width: 80px; /* adjust as needed */
+}
+
+/* Optional hover effect on the whole pill */
+.key-pill:hover {
+    border-color: white;
+}
+
+.updates-section .updates-card {
+    background-color: #111;
+    border-radius: 0.5rem;
+    border: 1px solid #333;
+}

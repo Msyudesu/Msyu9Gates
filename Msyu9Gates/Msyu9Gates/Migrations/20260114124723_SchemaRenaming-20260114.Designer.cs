@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Msyu9Gates.Data;
 
@@ -10,14 +11,16 @@ using Msyu9Gates.Data;
 namespace Msyu9Gates.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260114124723_SchemaRenaming-20260114")]
+    partial class SchemaRenaming20260114
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Attempt", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Attempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +50,7 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("AttemptsDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Chapter", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Chapter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +91,7 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("ChaptersDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Gate", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Gate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,7 +129,7 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("GatesDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.GateKey", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.GateKey", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,30 +163,7 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("KeysDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.News", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset?>("PublishedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("NewsDb");
-                });
-
-            modelBuilder.Entity("Msyu9Gates.Data.Models.User", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,41 +198,41 @@ namespace Msyu9Gates.Migrations
                     b.ToTable("UsersDb");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Attempt", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Attempt", b =>
                 {
-                    b.HasOne("Msyu9Gates.Data.Models.Chapter", null)
+                    b.HasOne("Msyu9Gates.Lib.Models.Chapter", null)
                         .WithMany("Attempts")
                         .HasForeignKey("ChapterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Chapter", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Chapter", b =>
                 {
-                    b.HasOne("Msyu9Gates.Data.Models.Gate", null)
+                    b.HasOne("Msyu9Gates.Lib.Models.Gate", null)
                         .WithMany("Chapters")
                         .HasForeignKey("GateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.GateKey", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.GateKey", b =>
                 {
-                    b.HasOne("Msyu9Gates.Data.Models.Chapter", null)
+                    b.HasOne("Msyu9Gates.Lib.Models.Chapter", null)
                         .WithMany("Keys")
                         .HasForeignKey("ChapterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Chapter", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Chapter", b =>
                 {
                     b.Navigation("Attempts");
 
                     b.Navigation("Keys");
                 });
 
-            modelBuilder.Entity("Msyu9Gates.Data.Models.Gate", b =>
+            modelBuilder.Entity("Msyu9Gates.Lib.Models.Gate", b =>
                 {
                     b.Navigation("Chapters");
                 });

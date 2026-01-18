@@ -1,0 +1,46 @@
+﻿@using System.Security.Claims
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @{
+            var user = auth.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var avatarHash = user.FindFirst("discord:avatar")?.Value;
+            string? avatarUrl = null;
+
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(avatarHash))
+            {
+                var ext = avatarHash.StartsWith("a_") ? "gif" : "png";
+                avatarUrl = $"https://cdn.discordapp.com/avatars/{userId}/{avatarHash}.{ext}?size=64";
+            }
+        }
+        <div class="dropdown">
+            <span class="me-2">
+                @if (avatarUrl is not null)
+                {
+                    <img src="@avatarUrl"
+                         alt="Avatar"
+                         width="64"
+                         height="64"
+                         style="border-radius:50%;object-fit:cover;"
+                         loading="lazy" />
+                }
+            </span>
+
+            <div class="dropdown-content">
+                <span class="me-2">@user.Identity?.Name</span>
+                <hr />
+                <form method="post" action="/auth/logout" style="display:inline">
+                    <AntiforgeryToken />
+                    <button class="btn btn-link p-0 align-baseline">Logout</button>
+                </form>
+            </div>
+
+        </div>        
+    </Authorized>
+    <NotAuthorized>
+        <form method="get" action="/auth/login/discord" style="display:inline">
+            <button class="btn btn-link p-0 align-baseline">Login</button>
+        </form>
+    </NotAuthorized>
+</AuthorizeView>

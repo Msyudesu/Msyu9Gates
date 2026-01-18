@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace Msyu9Gates.Client
+namespace Msyu9Gates.Client;
+internal class Program
 {
-    internal class Program
+    static async Task Main(string[] args)
     {
-        static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            await builder.Build().RunAsync();
-        }
+        await builder.Build().RunAsync();
     }
 }

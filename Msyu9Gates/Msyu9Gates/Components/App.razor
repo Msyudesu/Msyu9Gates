@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["lib/styles/app.css"]" />
+    <link rel="stylesheet" href="@Assets["lib/styles/nav.css"]" />
+    <link rel="stylesheet" href="@Assets["lib/styles/home.css"]" />
+    <link rel="stylesheet" href="@Assets["lib/styles/narrative.css"]" />
     <link rel="stylesheet" href="@Assets["Msyu9Gates.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -14,7 +17,20 @@
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveAuto" />
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="routeData" DefaultLayout="typeof(Msyu9Gates.Client.Layout.MainLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <LayoutView Layout="typeof(Msyu9Gates.Client.Layout.MainLayout)">
+                    <p>Sorry, nothing found.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+
     <script src="_framework/blazor.web.js"></script>
     <script src="sprites.js"></script>
 </body>

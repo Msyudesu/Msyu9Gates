@@ -1,0 +1,26 @@
+﻿using Msyu9Gates.Data.Models;
+using Msyu9Gates.Lib.Contracts;
+
+namespace Msyu9Gates.Contracts;
+
+public static class AttemptsMappingExtensions
+{
+    public static AttemptDto ToDto(this Attempt attempt) => 
+        new AttemptDto(
+            AttemptedAtUtc: DateTimeOffset.UtcNow,
+            UserId: attempt.UserId,
+            GateId: attempt.GateId,
+            ChapterId: attempt.ChapterId,
+            AttemptValue: attempt.AttemptValue
+        );
+    
+
+    public static void ApplyFromDto(this Attempt attempt, AttemptDto dto)
+    {
+        attempt.AttemptedAtUtc = dto.AttemptedAtUtc;
+        attempt.UserId = dto.UserId;
+        attempt.GateId = dto.GateId;
+        attempt.ChapterId = dto.ChapterId;
+        attempt.AttemptValue = dto.AttemptValue;
+    }
+}

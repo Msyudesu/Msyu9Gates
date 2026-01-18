@@ -1,0 +1,69 @@
+﻿@page "/gate/{gateNumber:int}/chapter/{chapterNumber:int}/narrative"
+@rendermode InteractiveAuto
+
+@inject NavigationManager nav
+@inject IJSRuntime js
+@inject IConfiguration config
+
+<PageTitle>@title</PageTitle>
+
+@* Add Logic for Custom Page Font selection / flags. Relates to previous custom font for G3C4 *@
+@if (gateNumber == 3 && chapterNumber == 4)
+{
+    <style>
+        html, body {
+            color: azure;
+            font-family: 'CipherFont', CipherFont, Arial, sans-serif;
+            background-color: #000
+        }
+    </style>
+}
+
+<div class="container">
+    <article>
+        <h3 style="color: red">@title</h3>
+        <button class="btn btn-primary" @onclick=@GoHome>Gate Home</button>
+
+        <br />
+        <br />
+
+        @foreach (var (line, idx) in articleBody.Split('\n').Select((l, i) => (l, i)))
+        {
+            <div class="narrative-line" style="animation-delay:@($"{idx * 1.5:F1}s")">
+                @line
+            </div>
+            <br />
+        }
+
+        <button class="btn btn-primary" @onclick=@GoToChapterOne>Continue</button>
+    </article>
+</div>
+
+@code {
+    string articleBody = string.Empty;
+    string? title;
+    string homeRoute = "/";
+    string nextChapterRoute = @"/"; // Home route for now. Needs data structure for gates/chapters implemented.
+
+    [Parameter] public int gateNumber { get; set; }
+    [Parameter] public int chapterNumber { get; set; }
+
+    HttpClient http = new HttpClient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        title = $"Gate {Utils.ToRoman(gateNumber)} - Chapter {Utils.ToRoman(chapterNumber)}";
+        homeRoute = $"/gate/{gateNumber}";
+        
+        articleBody = await Common.GetNarrative(nav, http, gateNumber, chapterNumber);
+    }
+
+    private void GoHome() => nav.NavigateTo(homeRoute);
+
+    private void GoToChapterOne() => nav.NavigateTo(nextChapterRoute);
+}
