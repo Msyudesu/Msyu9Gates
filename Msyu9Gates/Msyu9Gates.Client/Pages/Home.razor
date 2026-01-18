@@ -81,15 +81,19 @@
             <section class="updates-section">
                 <h2 class="section-title mb-3">Updates & Hints</h2>
                 <div class="updates-card p-3">
-                    <p class="small mb-1" style="color: silver">Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</p>
+                    <p class="small mb-1" style="color: silver">Last updated: @Utils.FormatUtc(newsItems.FirstOrDefault()?.PublishedAtUtc)</p>
                     <hr />
                     <article class="updates-body">
                         @* For now, static; later you can pull from a DB or markdown file *@
-                        <p>Welcome to the redesigned Msyu9 Gates experience.</p>
+                        <p>Msyu9Gates v2.0</p>
                         <ul>
-                            <li>New layout and navigation bar.</li>
-                            <li>Story and puzzles are being reintroduced gate by gate.</li>
-                            <li>Watch this space for hints and patch notes.</li>
+                            @foreach(var news in newsItems)
+                            {
+                                <li><strong>
+                                        @Utils.FormatUtc(news.PublishedAtUtc)
+                                    </strong> - @($"[{Enum.GetName(typeof(Utils.NewsType), (int)news.Type)}]")  @news.Body
+                                </li>
+                            }
                         </ul>
                     </article>
                 </div>
@@ -102,6 +106,7 @@
     HttpClient http = new HttpClient();
     List<KeyDto> unlockedKeys = new List<KeyDto>();
     List<GateDto> gates = new List<GateDto>();
+    List<NewsDto> newsItems = new List<NewsDto>();
     KeyDto? expandedKey;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -126,6 +131,14 @@
         if(response.IsSuccessStatusCode)
         {
             gates = await response.Content.ReadFromJsonAsync<List<GateDto>>() ?? new List<GateDto>() { };
+        }
+        StateHasChanged();
+
+        uri = new Uri(nav.BaseUri + "api/news/all");
+        response = await http.GetAsync(uri);
+        if (response.IsSuccessStatusCode)
+        {
+            newsItems = await response.Content.ReadFromJsonAsync<List<NewsDto>>() ?? new List<NewsDto>() { };
         }
         StateHasChanged();
     }

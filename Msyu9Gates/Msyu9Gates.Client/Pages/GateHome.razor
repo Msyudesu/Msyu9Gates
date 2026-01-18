@@ -67,7 +67,7 @@ else
 
     HttpClient http = new HttpClient();
 
-    private int _lastLoadedGate;
+    private int _lastLoadedGate = 0;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -83,6 +83,7 @@ else
         await GetGateInfoAsync();
         await GetChaptersAsync();
 
+        _lastLoadedGate = gateNumber;
         articleBody = await Common.GetNarrative(nav, http, gateNumber);
     }
 

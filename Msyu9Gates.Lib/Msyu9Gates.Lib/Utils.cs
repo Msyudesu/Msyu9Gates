@@ -22,6 +22,8 @@ public class Utils
         }
         return result;
     }
+    public static string FormatUtc(DateTimeOffset? value)
+        => value is null ? string.Empty : value.Value.ToUniversalTime().ToString("yyyy-MM-dd");
 
     public enum GateNumber
     {
@@ -69,5 +71,12 @@ public class Utils
         Hard,           /// <summary>[ 1 - 4  WEEKS  ]  Very difficult. Fragmented puzzles with gate-keeping, advaned cryptography (requires specialized knowledge or tools), meta-riddles requiring specific domain/community knowledge</summary> 
         Extreme,        /// <summary>[ 1 - 3  MONTHS ]  Extremely difficult, requires special knowledge, tools and/or skills. Close to but not entirely unfair or impossible.</summary> 
         Msyu,           /// <summary>[ 3+     MONTHS ]  Borderline impossible, the type of challenge Msyu is notorius for crafting as punishment</summary> 
+    }
+
+    public enum NewsType
+    {
+        Info = 0,
+        Fix = 1,
+        Hint = 2
     }
 }

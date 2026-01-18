@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Chapter> ChaptersDb => Set<Chapter>();
     public DbSet<User> UsersDb => Set<User>();
     public DbSet<Attempt> AttemptsDb => Set<Attempt>();
+    public DbSet<News> NewsDb => Set<News>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -44,6 +45,9 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Attempt>()
             .HasIndex(a => new { a.UserId, a.GateId, a.ChapterId });
+
+        modelBuilder.Entity<News>()
+            .HasIndex(n => n.Id);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -29,6 +29,12 @@
                 Keys
             </button>
         </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link @(activeTab == AdminTab.News ? "active" : "")"
+                    @onclick="() => activeTab = AdminTab.News">
+                News
+            </button>
+        </li>
     </ul>
 
     @if (!string.IsNullOrWhiteSpace(statusMessage))
@@ -237,6 +243,67 @@
                     </div>
                 }
                 break;
+
+            case AdminTab.News:
+                {
+                    <h2>News Items</h2>
+
+                    <div class="card gate-card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="card-title mb-0">Create New News</h5>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="ResetNewNews">Clear</button>
+                                    <button class="btn btn-sm btn-success" @onclick="CreateNewsAsync">Post</button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-12 col-md-9">
+                                    <label class="form-label">News Body:</label>
+                                    <input class="form-control"
+                                           value="@newNews.Body"
+                                           @onchange="e => newNews = newNews with { Body = e.Value?.ToString() ?? string.Empty }" />
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">News Type:</label>
+                                    <input class="form-control" type="number" value="@((int)newNews.Type)"
+                                           @onchange="e => newNews = newNews with { Type = (Utils.NewsType)ParseInt(e.Value, (int)newNews.Type) }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @foreach (var news in newsItems.OrderByDescending(n => n.Id))
+                    {
+                        <div class="card gate-card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <button class="btn btn-sm btn-primary" @onclick="() => SaveNewsAsync(news)">Save</button>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteNewsAsync(news)">Delete</button>
+                                </div>
+
+                                <div class="row g-3 mt-2">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label">News Body:</label>
+                                        <input class="form-control"
+                                               value="@news.Body"
+                                               @onchange="e => UpdateNews(news, news with { Body = e.Value?.ToString() ?? string.Empty })" />
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <label class="form-label">News Type:</label>
+                                        <input class="form-control" type="number" value="@((int)news.Type)"
+                                               @onchange="e => UpdateNews(news, news with { Type = (Utils.NewsType)ParseInt(e.Value, (int)news.Type) })" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                break;
         }
     }
 </div>
@@ -246,7 +313,8 @@
     {
         Gates,
         Chapters,
-        Keys
+        Keys,
+        News
     }
 
     private readonly HttpClient http = new();
@@ -261,6 +329,9 @@
     private List<GateDto> gates = new();
     private List<ChapterDto> chapters = new();
     private List<KeyDto> keys = new();
+    private List<NewsDto> newsItems = new();
+
+    private NewsDto newNews = NewBlankNews();
 
     protected override async Task OnInitializedAsync()
     {
@@ -277,6 +348,7 @@
             gates = await GetJsonAsync<List<GateDto>>("api/gates/all") ?? new List<GateDto>();
             chapters = await GetJsonAsync<List<ChapterDto>>("api/chapters/all") ?? new List<ChapterDto>();
             keys = await GetJsonAsync<List<KeyDto>>("api/keys/all") ?? new List<KeyDto>();
+            newsItems = await GetJsonAsync<List<NewsDto>>("api/news/all") ?? new List<NewsDto>();
 
             SetStatus("Loaded.", isError: false);
         }
@@ -343,6 +415,85 @@
         }
     }
 
+    private async Task SaveNewsAsync(NewsDto news)
+    {
+        try
+        {
+            var response = await http.PostAsJsonAsync("api/news/update", news);
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Save news failed: {response.StatusCode}", isError: true);
+                return;
+            }
+            SetStatus($"Saved news Id={news.Id}.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Save news error: {ex.Message}", isError: true);
+        }
+    }
+
+    private async Task CreateNewsAsync()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(newNews.Body))
+            {
+                SetStatus("News body is required.", isError: true);
+                return;
+            }
+
+            var response = await http.PostAsJsonAsync("api/news/save", newNews);
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Create news failed: {response.StatusCode}", isError: true);
+                return;
+            }
+
+            var created = await response.Content.ReadFromJsonAsync<NewsDto>();
+            if (created is not null)
+            {
+                newsItems.Insert(0, created);
+            }
+
+            ResetNewNews();
+            SetStatus("Created news item.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Create news error: {ex.Message}", isError: true);
+        }
+    }
+
+    private async Task DeleteNewsAsync(NewsDto news)
+    {
+        try
+        {
+            var response = await http.DeleteAsync($"api/news/delete/{news.Id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                SetStatus($"Delete news failed: {response.StatusCode}", isError: true);
+                return;
+            }
+            newsItems.RemoveAll(n => n.Id == news.Id);
+            SetStatus($"Deleted news Id={news.Id}.", isError: false);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Delete news error: {ex.Message}", isError: true);
+        }
+    }
+
+    private static NewsDto NewBlankNews()
+        => new(
+            Id: 0,
+            PublishedAtUtc: DateTimeOffset.UtcNow,
+            Body: string.Empty,
+            Type: Utils.NewsType.Info);
+
+    private void ResetNewNews()
+        => newNews = NewBlankNews();
+
     private void UpdateGate(GateDto oldGate, GateDto newGate)
     {
         var idx = gates.FindIndex(g => g.Id == oldGate.Id);
@@ -367,6 +518,15 @@
         if (idx >= 0)
         {
             keys[idx] = newKey;
+        }
+    }
+
+    private void UpdateNews(NewsDto oldNews, NewsDto newNews)
+    {
+        var idx = newsItems.FindIndex(n => n.Id == oldNews.Id);
+        if (idx >= 0)
+        {
+            newsItems[idx] = newNews;
         }
     }
 

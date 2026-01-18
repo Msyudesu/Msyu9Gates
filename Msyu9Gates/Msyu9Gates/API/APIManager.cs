@@ -174,6 +174,37 @@ public static class APIManager
 
     }
 
+    public static void AddNewsAPIs(WebApplication app)
+    {
+        app.MapGet("/api/news/all", async (ApplicationDbContext db, CancellationToken ct) =>
+        {
+            return Results.Ok(await NewsDbUtils.GetAllNewsAsync(db, ct));
+        });
+        
+        app.MapGet("/api/news/{newsId:int}", async (int newsId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var news = await NewsDbUtils.GetNewsByIdAsync(db, newsId, ct);
+            return news is null ? Results.NotFound() : Results.Ok(news);
+        });
+        
+        app.MapPost("/api/news/save", async (NewsDto newsDto, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            return Results.Ok(await NewsDbUtils.SaveNewsAsync(db, newsDto, ct));
+        }).RequireAuthorization("Admin");
+        
+        app.MapPut("/api/news/update", async (NewsDto newsDto, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            var updatedNews = await NewsDbUtils.UpdateNewsAsync(db, newsDto, ct);
+            return updatedNews is null ? Results.NotFound() : Results.Ok(updatedNews);
+        }).RequireAuthorization("Admin");
+
+        app.MapDelete("/api/news/delete/{newsId:int}", async (int newsId, ApplicationDbContext db, CancellationToken ct) =>
+        {
+            await NewsDbUtils.DeleteNewsAsync(db, newsId, ct);
+            return Results.Ok();
+        }).RequireAuthorization("Admin");
+    }
+
     private static async Task<string?> ReadNarrativeFromFileAsync(string narrative)
     {
         const string NARRATIVE_FOLDER = "Data/Misc/";
@@ -192,5 +223,6 @@ public static class APIManager
         AddChapterAPIs(app);
         AddKeyAPIs(app);
         AddAttemptAPIs(app);
+        AddNewsAPIs(app);
     }
 }
