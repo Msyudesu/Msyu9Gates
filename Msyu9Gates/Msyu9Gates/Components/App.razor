@@ -24,13 +24,10 @@
                 <FocusOnNavigate RouteData="routeData" Selector="h1" />
             </Found>
             <NotFound>
-                <LayoutView Layout="typeof(Msyu9Gates.Client.Layout.MainLayout)">
-                    <p>Sorry, nothing found.</p>
-                </LayoutView>
+                <RedirectToError StatusCode="404" />
             </NotFound>
         </Router>
     </CascadingAuthenticationState>
-
     <script src="_framework/blazor.web.js"></script>
     <script src="sprites.js"></script>
 </body>
