@@ -1,0 +1,26 @@
+﻿@page "/Error/{StatusCode:int}"
+
+<PageTitle>@Title</PageTitle>
+
+<h1>@Title</h1>
+<p>@Message</p>
+
+@code {
+    [Parameter] public int StatusCode { get; set; }
+
+    private string Title => StatusCode switch
+    {
+        401 => "Who are you?",
+        403 => "You can't access this resource.",
+        404 => "That doesn't exist.",
+        _ => $"{StatusCode} - Error"
+    };
+
+    private string Message => StatusCode switch
+    {
+        401 => "You need to sign in to view this resource.",
+        403 => "You don't have permission to access this resource.",
+        404 => "The page you requested doesn't exist.",
+        _ => "An unexpected error occurred."
+    };
+}
